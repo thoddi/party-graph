@@ -1,0 +1,138 @@
+{
+  "framsokn": {
+    "1923": "images/framsokn1.png",
+    "2007": "images/framsokn2.png",
+    "2009": "images/framsokn1.png",
+    "2013": "images/framsokn3.png",
+    "2016": "images/framsokn1.png",
+    "2021": "images/framsokn4.png"
+  },
+  "althyduflokkurinn": {
+    "1923": "images/althyduflokkurinn.png"
+  },
+  "sjalfstaedisflokkur": {
+    "1931": "images/sjalfstaedis1.jpg",
+    "1991": "images/sjalfstaedis2.png",
+    "2017": "images/sjalfstaedis3.jpg"
+  },
+  "sosialistar": {
+    "1942": "images/sosialistar1.png"
+  },
+  "bandalag": {
+    "1956": "images/bandalag.jpg"
+  },
+  "sfv": {
+    "1971": "images/sfv.png"
+  },
+  "komm": {
+    "1974": "images/komm.png"
+  },
+  "fylking": {
+    "1974": "images/fylking1.png",
+    "1978": "images/fylking2.png"
+  },
+  "bandaja": {
+    "1983": "images/bandaja.jpg"
+  },
+  "kvenna": {
+    "1983": "images/kvenna.png"
+  },
+  "borgara": {
+    "1987": "images/borgara.svg"
+  },
+  "mannsins": {
+    "1987": "images/humanistar.png"
+  },
+  "frjalslyndir": {
+    "1991": "images/frjalslyndir.png"
+  },
+  "thjodvaki": {
+    "1995": "images/thjodvaki.png"
+  },
+  "frjalslyndi": {
+    "1999": "images/frjalslyndi.png"
+  },
+  "samfylking": {
+    "1999": "images/samfylking1.png",
+    "2003": "images/samfylking2.png",
+    "2021": "images/samfylking3.png",
+    "2024": "images/samfylking4.avif"
+  },
+  "vg": {
+    "1999": "images/vg1.png",
+    "2016": "images/vg2.png",
+    "2021": "images/vg3.png"
+  },
+  "anarkistar": {
+    "1999": "images/anarkistar.png"
+  },
+  "humanistar": {
+    "1999": "images/humanistar1.png",
+    "2013": "images/humanistar2.png"
+  },
+  "afl": {
+    "2003": "images/afl.png"
+  },
+  "borgarahr": {
+    "2009": "images/borgarahreyfingin.png"
+  },
+  "hg": {
+    "2013": "images/hg.png"
+  },
+  "piratar": {
+    "2013": "images/piratar1.png",
+    "2021": "images/piratar2.png",
+    "2024": "images/piratar3.png"
+  },
+  "dogun": {
+    "2013": "images/dogun.jpg"
+  },
+  "sturla": {
+    "2013": "images/sturla.png"
+  },
+  "bf": {
+    "2013": "images/bf.png"
+  },
+  "regnboginn": {
+    "2013": "images/regnboginn.png"
+  },
+  "althydufylking": {
+    "2013": "images/althydufylkingin.png"
+  },
+  "flheim": {
+    "2013": "images/flokkur_heimilanna_logo.png"
+  },
+  "lydvaktin": {
+    "2013": "images/lydvaktin.jpg"
+  },
+  "landsb": {
+    "2013": "images/landsb.png"
+  },
+  "islthj": {
+    "2016": "images/islthjod.jpg"
+  },
+  "vidreisn": {
+    "2016": "images/vidreisn.png",
+    "2021": "images/vidreisn2.png"
+  },
+  "flfolksins": {
+    "2016": "images/flfolksins1.png",
+    "2021": "images/flfolksins2.png"
+  },
+  "midflokkur": {
+    "2017": "images/midflokkur1.png",
+    "2021": "images/midflokkur2.png"
+  },
+  "frjalydfl": {
+    "2021": "images/frjalydfl.png"
+  },
+  "sosialistafl": {
+    "2021": "images/sosialistar2.png"
+  },
+  "abyrgfr": {
+    "2021": "images/abyrgframtid.png"
+  },
+  "lydraedisfl": {
+    "2024": "images/lydraedisfl.png"
+  }
+}
