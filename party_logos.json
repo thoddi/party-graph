@@ -47,7 +47,7 @@
     "1991": "images/frjalslyndir.png"
   },
   "thjodvaki": {
-    "1995": "images/thjodvaki.png"
+    "1995": "images/Thjodvaki.png"
   },
   "frjalslyndi": {
     "1999": "images/frjalslyndi.png"
@@ -80,9 +80,9 @@
     "2013": "images/hg.png"
   },
   "piratar": {
-    "2013": "images/piratar1.png",
-    "2021": "images/piratar2.png",
-    "2024": "images/piratar3.png"
+    "2013": "images/Piratar1.png",
+    "2021": "images/Piratar2.png",
+    "2024": "images/Piratar3.png"
   },
   "dogun": {
     "2013": "images/dogun.jpg"
@@ -130,7 +130,7 @@
     "2021": "images/sosialistar2.png"
   },
   "abyrgfr": {
-    "2021": "images/abyrgframtid.png"
+    "2021": "images/abyrgFramtid.png"
   },
   "lydraedisfl": {
     "2024": "images/lydraedisfl.png"
