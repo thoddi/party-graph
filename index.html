@@ -7,8 +7,7 @@
     body { font-family: sans-serif; }
     .container { display: flex; align-items: flex-start; }
     .column {
-      margin: 0 60px; /* 3-5x meira bil á milli ára */
-      min-width: 140px;
+      margin: 0 40px;
     }
     .party {
       width: 120px;
@@ -84,8 +83,8 @@
     <button id="optimize-order-btn" style="font-size: 16px; padding: 4px 12px;">Raða flokkum optimalt</button>
   </h1>
   <div class="main-content">
-    <div class="container" id="columns"></div>
     <svg id="svg-lines"></svg>
+    <div class="container" id="columns"></div>
   </div>
   <!-- Modal for optimization -->
   <div id="optimize-modal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:#0008; z-index:2000; align-items:center; justify-content:center;">

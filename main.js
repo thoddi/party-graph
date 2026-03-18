@@ -62,11 +62,11 @@ function renderColumns(data, logoMap) {
   });
 }
 
-function getBoxEdgeCenter(element, direction) {
-  // direction: 'left' or 'right'
+function getBoxCenter(element) {
+  // Skilar alltaf miðju kassans
   const rect = element.getBoundingClientRect();
   const parentRect = element.offsetParent.getBoundingClientRect();
-  const x = direction === 'left' ? rect.left - parentRect.left : rect.right - parentRect.left;
+  const x = rect.left - parentRect.left + rect.width / 2;
   const y = rect.top - parentRect.top + rect.height / 2;
   return { x, y };
 }
@@ -95,23 +95,64 @@ function drawGroups(data, columnsDiv, partyBoxes, svg) {
     const containerRect = columnsDiv.getBoundingClientRect();
     // True horizontal center between right edge of prevCol and left edge of nextCol
     const x = ((prevRect.right + nextRect.left) / 2) - containerRect.left;
-    let y;
-    if (typeof group.row === 'number') {
-      // Find the party box in nextCol at row index
-      const partyDivs = Array.from(nextCol.querySelectorAll('.party'));
-      if (partyDivs[group.row]) {
-        const rect = partyDivs[group.row].getBoundingClientRect();
-        y = rect.top - containerRect.top + rect.height / 2;
-      } else {
-        // fallback: center
-        y = ((prevRect.top + nextRect.top + prevRect.bottom + nextRect.bottom) / 4) - containerRect.top;
+
+    // Collect y-positions of all connected parties (members and splitsTo)
+    let yPositions = [];
+    group.members.forEach(pid => {
+      const partyBox = partyBoxes[`${data.elections[prevColIdx].year}-${pid}`];
+      if (partyBox) {
+        const center = getBoxCenter(partyBox);
+        yPositions.push(center.y);
       }
+    });
+    group.splitsTo.forEach(pid => {
+      const partyBox = partyBoxes[`${data.elections[nextColIdx].year}-${pid}`];
+      if (partyBox) {
+        const center = getBoxCenter(partyBox);
+        yPositions.push(center.y);
+      }
+    });
+    // If no valid parties, fallback to center between columns
+    let y;
+    if (yPositions.length > 0) {
+      y = yPositions.reduce((a, b) => a + b, 0) / yPositions.length;
     } else {
-      // fallback: center
       y = ((prevRect.top + nextRect.top + prevRect.bottom + nextRect.bottom) / 4) - containerRect.top;
     }
     const r = 18;
-    // Draw circle
+    // Draw dashed lines from members to center of group circle
+    group.members.forEach(pid => {
+      const partyBox = partyBoxes[`${data.elections[prevColIdx].year}-${pid}`];
+      if (!partyBox) return;
+      const from = getBoxCenter(partyBox);
+      const to = { x, y };
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', from.x);
+      line.setAttribute('y1', from.y);
+      line.setAttribute('x2', to.x);
+      line.setAttribute('y2', to.y);
+      line.setAttribute('stroke', '#333');
+      line.setAttribute('stroke-width', '2');
+      line.setAttribute('stroke-dasharray', '6,4');
+      svg.appendChild(line);
+    });
+    // Draw dashed lines from center of group circle to splitsTo
+    group.splitsTo.forEach(pid => {
+      const partyBox = partyBoxes[`${data.elections[nextColIdx].year}-${pid}`];
+      if (!partyBox) return;
+      const to = getBoxCenter(partyBox);
+      const from = { x, y };
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', from.x);
+      line.setAttribute('y1', from.y);
+      line.setAttribute('x2', to.x);
+      line.setAttribute('y2', to.y);
+      line.setAttribute('stroke', '#333');
+      line.setAttribute('stroke-width', '2');
+      line.setAttribute('stroke-dasharray', '6,4');
+      svg.appendChild(line);
+    });
+    // Draw circle and label last so they are on top
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle.setAttribute('cx', x);
     circle.setAttribute('cy', y);
@@ -129,40 +170,6 @@ function drawGroups(data, columnsDiv, partyBoxes, svg) {
       text.textContent = group.label;
       svg.appendChild(text);
     }
-    // Draw dashed lines from members to left edge of group circle
-    group.members.forEach(pid => {
-      const partyBox = partyBoxes[`${data.elections[prevColIdx].year}-${pid}`];
-      if (!partyBox) return;
-      const from = getBoxEdgeCenter(partyBox, 'right');
-      // Calculate left edge of circle
-      const to = { x: x - r, y: y };
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', from.x);
-      line.setAttribute('y1', from.y);
-      line.setAttribute('x2', to.x);
-      line.setAttribute('y2', to.y);
-      line.setAttribute('stroke', '#333');
-      line.setAttribute('stroke-width', '2');
-      line.setAttribute('stroke-dasharray', '6,4');
-      svg.appendChild(line);
-    });
-    // Draw dashed lines from right edge of group circle to splitsTo
-    group.splitsTo.forEach(pid => {
-      const partyBox = partyBoxes[`${data.elections[nextColIdx].year}-${pid}`];
-      if (!partyBox) return;
-      const to = getBoxEdgeCenter(partyBox, 'left');
-      // Calculate right edge of circle
-      const from = { x: x + r, y: y };
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', from.x);
-      line.setAttribute('y1', from.y);
-      line.setAttribute('x2', to.x);
-      line.setAttribute('y2', to.y);
-      line.setAttribute('stroke', '#333');
-      line.setAttribute('stroke-width', '2');
-      line.setAttribute('stroke-dasharray', '6,4');
-      svg.appendChild(line);
-    });
   });
 }
 
@@ -203,8 +210,9 @@ function drawConnections(data, logoMap) {
 
   function drawLine(fromBox, toBox, type, description) {
     if (!fromBox || !toBox) return;
-    const from = getBoxEdgeCenter(fromBox, 'right');
-    const to = getBoxEdgeCenter(toBox, 'left');
+    // Línur milli flokka eiga alltaf að fara frá miðju til miðju
+    const from = getBoxCenter(fromBox);
+    const to = getBoxCenter(toBox);
     // Draw the visible line (thin)
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', from.x);
@@ -297,6 +305,70 @@ function computeBarycenterOrder(data) {
   return orders;
 }
 
+// Future-aware ordering algorithm
+function computeFutureAwareOrder(data) {
+  // Helper: build a map from (year, partyId) to row index
+  const partyRowMap = {};
+  data.elections.forEach((election, i) => {
+    election.parties.forEach((p, idx) => {
+      if (p && p.id) partyRowMap[`${election.year}-${p.id}`] = idx;
+    });
+  });
+
+  // Helper: for each party in each election, find all connections to parties in the next election
+  function getFutureConnections(year, partyId) {
+    const nextIdx = data.elections.findIndex(e => e.year === year) + 1;
+    if (nextIdx <= 0 || nextIdx >= data.elections.length) return [];
+    const nextYear = data.elections[nextIdx].year;
+    // Direct connections
+    const direct = data.connections.filter(c => c.from.year === year && c.from.partyId === partyId && c.to.year === nextYear)
+      .map(c => c.to.partyId);
+    // Group splits
+    let groupSplits = [];
+    if (data.groups) {
+      data.groups.forEach(g => {
+        if (Math.floor(g.year) === year && g.members.includes(partyId)) {
+          groupSplits = groupSplits.concat(g.splitsTo);
+        }
+      });
+    }
+    // Also, if party continues with same id
+    const nextElection = data.elections[nextIdx];
+    const continues = nextElection.parties.filter(p => p && p.id === partyId).map(p => p.id);
+    return [...direct, ...groupSplits, ...continues];
+  }
+
+  // Start with current order for first year
+  const orders = [];
+  orders.push(data.elections[0].parties.map((p, i) => p && p.id ? p.id : null));
+  for (let i = 1; i < data.elections.length; i++) {
+    const prevOrder = orders[i - 1];
+    const currParties = data.elections[i].parties;
+    // For each party, find index in prevOrder (if exists)
+    const bary = currParties.map((p, idx) => {
+      if (!p || !p.id) return { idx, id: null, bary: idx };
+      const prevIdx = prevOrder.indexOf(p.id);
+      // Future-aware: look at all connections from this party to next election
+      const futureConns = getFutureConnections(data.elections[i].year, p.id);
+      let futureIdxs = futureConns
+        .map(pid => partyRowMap[`${data.elections[i+1]?.year}-${pid}`])
+        .filter(x => typeof x === 'number');
+      let futureBary = futureIdxs.length > 0 ? (futureIdxs.reduce((a, b) => a + b, 0) / futureIdxs.length) : idx;
+      // Weighted average: 2x previous, 1x future
+      let score = (prevIdx === -1 ? idx : prevIdx) * 2/3 + futureBary * 1/3;
+      return { idx, id: p.id, bary: score };
+    });
+    bary.sort((a, b) => a.bary - b.bary);
+    const newOrder = bary.map(x => x.id);
+    orders.push(newOrder);
+    // Update partyRowMap for this year
+    data.elections[i].parties.forEach((p, idx) => {
+      if (p && p.id) partyRowMap[`${data.elections[i].year}-${p.id}`] = newOrder.indexOf(p.id);
+    });
+  }
+  return orders;
+}
+
 // Apply a party order (array of arrays of party ids/nulls) to data.elections
 function applyPartyOrder(data, order) {
   data.elections.forEach((election, i) => {
@@ -337,8 +409,7 @@ function setupOptimizeModal(data, logoMap, rerender) {
     if (algo === 'barycenter') {
       order = computeBarycenterOrder(data);
     } else if (algo === 'greedy') {
-      // Placeholder for future
-      order = computeBarycenterOrder(data);
+      order = computeFutureAwareOrder(data);
     } else {
       // Placeholder for custom
       order = computeBarycenterOrder(data);
