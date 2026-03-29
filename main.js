@@ -452,22 +452,74 @@ function setupOptimizeModal(data, logoMap, rerender) {
   };
 }
 
-async function main() {
-  await tryLoadPartyOrder();
+
+// State fyrir núverandi kosningagerð
+let currentElectionType = 'althingi'; // 'althingi' eða 'borgarstjorn'
+
+let sharedGroups = [];
+let electionData = {
+  althingi: { data: null, logoMap: null, order: null },
+  borgarstjorn: { data: null, logoMap: null, order: null }
+};
+
+async function loadElectionData(type) {
+  let dataFile = type === 'althingi' ? 'data.json' : 'borgarstjorn_data.json';
+  let logoFile = 'party_logos.json'; // Nota alltaf sama logo skjal
   const [data, logoMap] = await Promise.all([
-    loadJson('data.json'),
-    loadJson('party_logos.json')
+    loadJson(dataFile),
+    loadJson(logoFile)
   ]);
-  // Ef partyOrderOverride er til, nota hana
-  if (partyOrderOverride) {
-    applyPartyOrder(data, partyOrderOverride);
-  }
+  // Setja sharedGroups inn í data.groups
+  data.groups = sharedGroups;
+  electionData[type].data = data;
+  electionData[type].logoMap = logoMap;
+}
+
+function rerenderAll() {
+  const { data, logoMap } = electionData[currentElectionType];
   renderColumns(data, logoMap);
   setTimeout(() => drawConnections(data, logoMap), 100);
-  setupOptimizeModal(data, logoMap, () => {
-    renderColumns(data, logoMap);
-    setTimeout(() => drawConnections(data, logoMap), 100);
-  });
+}
+
+
+async function main() {
+  await tryLoadPartyOrder();
+  // Hlaða shared groups
+  const groupsObj = await loadJson('groups.json');
+  sharedGroups = groupsObj.groups || [];
+
+  // Hlaða báðum gagnasettum í byrjun
+  await loadElectionData('althingi');
+  await loadElectionData('borgarstjorn');
+
+  // Ef partyOrderOverride er til, nota hana á alþingi
+  if (partyOrderOverride && electionData.althingi.data) {
+    applyPartyOrder(electionData.althingi.data, partyOrderOverride);
+  }
+
+  // Byrja á alþingi
+  currentElectionType = 'althingi';
+  rerenderAll();
+
+  // Flipar
+  const tabAlthingi = document.getElementById('tab-althingi');
+  const tabBorgarstjorn = document.getElementById('tab-borgarstjorn');
+  function setTab(type) {
+    currentElectionType = type;
+    // Breyta útliti flipa
+    tabAlthingi.style.background = type === 'althingi' ? '#ffe066' : '#eee';
+    tabBorgarstjorn.style.background = type === 'borgarstjorn' ? '#ffe066' : '#eee';
+    rerenderAll();
+  }
+  tabAlthingi.onclick = () => setTab('althingi');
+  tabBorgarstjorn.onclick = () => setTab('borgarstjorn');
+
+  // Modal fyrir röðun
+  setupOptimizeModal(
+    () => electionData[currentElectionType].data,
+    () => electionData[currentElectionType].logoMap,
+    rerenderAll
+  );
 }
 
 window.onload = main;

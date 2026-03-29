@@ -1,0 +1,25 @@
+{
+  "groups": [
+    {
+      "id": "group1",
+      "year": 1933.5,
+      "members": [ "framsokn", "sjalfstaedisflokkur" ],
+      "splitsTo": [ "thjodernissinnar" ],
+      "label": ""
+    },
+    {
+      "id": "group2",
+      "year": 1971.5,
+      "members": [ "bandalag" ],
+      "splitsTo": [ "komm", "fylking" ],
+      "label": ""
+    },
+    {
+      "id": "hreyfingin",
+      "year": 2009.5,
+      "members": [ "borgarahr" ],
+      "splitsTo": [ "piratar", "dogun" ],
+      "label": "Hreyfingin"
+    }
+  ]
+}

@@ -406,6 +406,7 @@
         {},
         {},
         { "id": "framsokn", "votes": 18.4, "government": true },
+        {},
         { "id": "samfylking", "name": "Samfylkingin", "votes": 26.8 },
         { "id": "vg", "name": "Vinstri grænir", "votes": 9.1 },
         { "id": "humanistar", "name": "Húmanistaflokkurinn", "votes": 0.4, "elected": false },
@@ -420,9 +421,9 @@
         { "id": "frjalslyndi", "votes": 7.4 },
         {},
         {},
-        { "id": "samfylking", "votes": 31 },
-        { "id": "framsokn", "votes": 17.7, "government": true },
         {},
+        { "id": "framsokn", "votes": 17.7, "government": true },
+        { "id": "samfylking", "votes": 31 },
         { "id": "vg", "votes": 8.8 }
       ]
     },
@@ -491,6 +492,7 @@
         { "id": "flfolksins", "name": "Flokkur fólksins", "votes": 3.5, "elected": false },
         { "id": "bf", "votes": 7.2, "government": true },
         { "id": "framsokn", "votes": 11.5 },
+        {},
         { "id": "vg", "votes": 15.9 },
         { "id": "althydufylking", "votes": 0.3, "elected": false },
         { "id": "humanistar", "votes": 0, "elected": false }
@@ -732,7 +734,7 @@
     {
       "from": { "year": 2007, "partyId": "islandshr" },
       "to": { "year": 2009, "partyId": "samfylking" },
-      "type": "dashed"
+      "type": "solid"
     },
     {
       "from": { "year": 2009, "partyId": "borgarhr" },
@@ -851,32 +853,6 @@
       "to": { "year": 2024, "partyId": "flfolksins" },
       "type": "dashed",
       "description": "Lilja Rafney Magnúsdóttir gengur úr Vinstri grænum og til liðs við Flokk fólksins."
-    }
-  ],
-  "groups": [
-    {
-      "id": "group1",
-      "year": 1933.5,
-      "members": [ "framsokn", "sjalfstaedisflokkur" ],
-      "splitsTo": [ "thjodernissinnar" ],
-      "label": "",
-      "row": 1
-    },
-    {
-      "id": "group2",
-      "year": 1971.5,
-      "members": [ "bandalag" ],
-      "splitsTo": [ "komm", "fylking" ],
-      "label": "",
-      "row": 4
-    },
-    {
-      "id": "hreyfingin",
-      "year": 2009.5,
-      "members": [ "borgarahr" ],
-      "splitsTo": [ "piratar", "dogun" ],
-      "label": "Hreyfingin",
-      "row": 2
     }
   ]
 }

@@ -1,0 +1,25 @@
+{
+  "elections": [
+    {
+      "year": 1930,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "name": "Sjálfstæðisflokkurinn", "votes": 53.5 },
+        {},
+        { "id": "framsokn", "name": "Framsókn", "votes": 12 },
+        { "id": "althyduflokkurinn", "name": "Alþýðuflokkurinn", "votes": 35.3 }
+      ]
+    },
+    {
+      "year": 1934,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 49.3 },
+        { "id": "thjodernissinnar", "name": "Þjóðernissinnar", "votes": 2.8, "elected": false },
+        { "id": "framsokn", "votes": 7.1 },
+        { "id": "althyduflokkurinn", "votes": 32.7 },
+        { "id": "kommunistar", "name": "Kommúnista-flokkurinn", "votes": 8 }
+      ]
+    }
+  ],
+  "connections": [
+  ]
+}
