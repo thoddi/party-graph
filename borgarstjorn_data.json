@@ -18,8 +18,448 @@
         { "id": "althyduflokkurinn", "votes": 32.7 },
         { "id": "kommunistar", "name": "Kommúnista-flokkurinn", "votes": 8 }
       ]
+    },
+    {
+      "year": 1938,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 54.7 },
+        { "id": "thjodernissinnar", "votes": 1.8, "elected": false },
+        { "id": "framsokn", "votes": 8 },
+        { "id": "althyduflokkurinn+kommunistar", "name": "Alþýðuflokkur & Kommúnistaflokkur", "votes": 35.8 }
+      ]
+    },
+    {
+      "year": 1942,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 47.8, "government": true },
+        { "id": "framsokn", "votes": 5.5, "elected": false },
+        { "id": "althyduflokkurinn", "votes": 21.6 },
+        { "id": "sosialistar", "name": "Sósíalistaflokkurinn", "votes": 23.4 }
+      ]
+    },
+    {
+      "year": 1946,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 48.6, "government": true },
+        { "id": "framsokn", "votes": 6.6 },
+        { "id": "althyduflokkurinn", "votes": 16.2 },
+        { "id": "sosialistar", "votes": 28.5 }
+      ]
+    },
+    {
+      "year": 1950,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 50.8, "government": true },
+        { "id": "framsokn", "votes": 8.4 },
+        { "id": "althyduflokkurinn", "votes": 14.3 },
+        { "id": "sosialistar", "votes": 26.5}
+      ]
+    },
+    {
+      "year": 1954,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 49.5, "government": true },
+        { "id": "framsokn", "votes": 7.3 },
+        { "id": "althyduflokkurinn", "votes": 13.4 },
+        { "id": "sosialistar", "votes": 26.5},
+        { "id": "thjodvarnar", "name": "Þjóðvarnar-flokkurinn", "votes": 10.2 }
+      ]
+    },
+    {
+      "year": 1958,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 57.7, "government": true },
+        { "id": "framsokn", "votes": 9.5 },
+        { "id": "althyduflokkurinn", "votes": 8.2 },
+        { "id": "sosialistar", "votes": 19.3},
+        { "id": "thjodvarnar", "name": "Þjóðvarnar-flokkurinn", "votes": 5.3, "elected":  false }
+      ]
+    },
+    {
+      "year": 1962,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 52.1, "government": true },
+        { "id": "framsokn", "votes": 12.8 },
+        { "id": "althyduflokkurinn", "votes": 10.7 },
+        { "id": "bandalag", "name": "Alþýðubandalagið", "votes": 16.6},
+        { "id": "thjodvarnar", "name": "Þjóðvarnar-flokkurinn", "votes": 4, "elected":  false }
+      ]
+    },
+    {
+      "year": 1966,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 48.5, "government": true },
+        { "id": "framsokn", "votes": 17.2 },
+        { "id": "althyduflokkurinn", "votes": 14.6 },
+        { "id": "bandalag", "votes": 19.7}
+      ]
+    },
+    {
+      "year": 1970,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 47.2, "government": true },
+        { "id": "framsokn", "votes": 17 },
+        { "id": "althyduflokkurinn", "votes": 10.4 },
+        { "id": "sfv", "name": "Samtök frjálslyndra og vinstrimanna", "votes": 7 },
+        { "id": "bandalag", "votes": 16.2 },
+        { "id": "sosrvk", "name": "Sósíalistafélag Reykjavíkur", "votes": 1, "elected": false }
+      ]
+    },
+    {
+      "year": 1974,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 57.9, "government": true },
+        { "id": "framsokn", "votes": 16.4 },
+        { "id": "althyduflokkurinn+sfv", "name": "Alþýðuflokkur & SFV", "votes": 6.5 },
+        { "id": "bandalag", "votes": 18.2 },
+        { "id": "frj", "name": "Frjálslyndir", "votes": 1.2, "elected": false }
+      ]
+    },
+    {
+      "year": 1978,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 47.4, "government": true },
+        { "id": "framsokn", "votes": 9.4 },
+        { "id": "althyduflokkurinn", "votes": 13.4 },
+        { "id": "bandalag", "votes": 19.8 }
+      ]
+    },
+    {
+      "year": 1982,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 52.5, "government": true },
+        { "id": "framsokn", "votes": 9.5 },
+        { "id": "althyduflokkurinn", "votes": 8 },
+        { "id": "bandalag", "votes": 19 },
+        { "id": "kvenna", "votes": 10.9 }
+      ]
+    },
+    {
+      "year": 1986,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 52.7, "government": true },
+        {},
+        { "id": "framsokn", "votes": 7 },
+        { "id": "althyduflokkurinn", "votes": 15.5 },
+        { "id": "bandalag", "votes": 20.3 },
+        { "id": "kvenna", "votes": 11 },
+        { "id": "mannsins", "name": "Flokkur mannsins", "votes": 2, "elected": false }
+      ]
+    },
+    {
+      "year": 1990,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 60.4, "government": true },
+        {},
+        {},
+        { "id": "framsokn", "votes": 8.2, "government": true },
+        { "id": "vettvangur", "name": "Nýr vettvangur", "votes": 14.8 },
+        { "id": "bandalag", "votes": 8.5 },
+        { "id": "kvenna", "votes": 6 },
+        { "id": "mannsins", "votes": 1, "elected": false },
+        { "id": "gf", "name": "Grænt framboð", "votes": 1, "elected": false }
+      ]
+    },
+    {
+      "year": 1994,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 40.7 },
+        {},
+        {},
+        {},
+        {},
+        { "id": "rvk", "name": "Reykjavíkurlistinn", "votes": 53, "government": true }
+      ]
+    },
+    {
+      "year": 1998,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 45.2 },
+        {},
+        {},
+        {},
+        {},
+        {},
+        { "id": "rvk", "name": "Reykjavíkurlistinn", "votes": 53.6, "government": true },
+        { "id": "mannsins", "name": "Húmanistar", "votes": 0.6, "elected": false },
+        { "id": "laun", "name": "Launalistinn", "votes": 0.6, "elected": false }
+      ]
+    },
+    {
+      "year": 2002,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 40.3 },
+        { "id": "frjalslyndi", "votes": 6 },
+        {},
+        {},
+        {},
+        {},
+        {},
+        { "id": "rvk", "name": "Reykjavíkurlistinn", "votes": 52.6, "government": true },
+        { "id": "mannsins", "name": "Húmanistar", "votes": 0.2, "elected": false },
+        { "id": "hofsam", "name": "Höfuðborgar-samtökin", "votes": 0.6, "elected": false },
+        { "id": "vhs", "name": "Vinstri hægri snú", "votes": 0.4, "elected": false }
+      ]
+    },
+    {
+      "year": 2006,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 42.1 },
+        { "id": "frjalslyndi", "votes": 9.9 },
+        {},
+        {},
+        {},
+        {},
+        { "id": "framsokn", "votes": 6.1 },
+        { "id": "samfylking", "name": "Samfylkingin", "votes": 26.9 },
+        { "id": "vg", "name": "Vinstri græn", "votes": 13.2 }
+      ]
+    },
+    {
+      "year": 2010,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 33.6 },
+        { "id": "frjalslyndi", "votes": 0.5, "elected": false },
+        { "id": "fha", "name": "Framboð um heiðarleika og almennahagsmuni", "votes": 1.1, "elected": false},
+        {},
+        {},
+        { "id": "framsokn", "votes": 2.7, "elected": false },
+        { "id": "besti", "name": "Besta flokkurinn", "votes": 34.7, "government": true },
+        { "id": "samfylking", "votes": 19.1, "government": true },
+        {},
+        { "id": "vg", "votes": 7.2 },
+        { "id": "rvkfr", "name": "Listi Reykjavíkur-framboðsins", "votes": 1.1, "elected": false }
+      ]
+    },
+    {
+      "year": 2014,
+      "parties": [
+        {},
+        { "id": "sjalfstaedisflokkur", "votes": 25.7 },
+        { "id": "dogun", "name": "Dögun", "votes": 1.4, "elected": false },
+        {},
+        {},
+        { "id": "framsokn", "votes": 10.7 },
+        { "id": "bf", "name": "Björt framtíð", "votes": 15.6, "government": true },
+        { "id": "piratar", "name": "Píratar", "votes": 5.9, "government": true },
+        { "id": "samfylking", "votes": 31.9, "government": true },
+        { "id": "vg", "votes": 8.3, "government": true },
+        { "id": "althydufylking", "name": "Alþýðufylkingin", "votes": 0.4, "elected": false }
+      ]
+    },
+    {
+      "year": 2018,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 30.8 },
+        { "id": "vidreisn", "name": "Viðreisn", "votes": 8.2, "government": true},
+        { "id": "islthj", "votes": 0.2, "elected": false },
+        { "id": "flfolksins", "name": "Flokkur fólksins", "votes": 4.3 },
+        { "id": "midflokkur", "votes": 6.1 },
+        { "id": "framsokn", "votes": 3.2, "elected": false },
+        { "id": "bo2018", "votes": 0.4, "elected": false },
+        { "id": "piratar", "votes": 7.7, "government": true },
+        { "id": "samfylking", "votes": 25.9, "government": true },
+        { "id": "vg", "votes": 4.6, "government": true },
+        { "id": "sosialistafl", "name": "Sósíalistaflokkur Íslands", "votes": 6.4 },
+        { "id": "althydufylking", "votes": 0.3, "elected": false },
+        { "id": "kh2018", "name": "Kvennahreyfingin", "votes": 0.9, "elected": false },
+        { "id": "hl2018", "name": "Höfuðborgarlistinn", "votes": 0.6, "elected": false },
+        { "id": "kl2018", "name": "Karlalistinn", "votes": 0.3, "elected": false },
+        { "id": "frelsisflokkur", "name": "Frelsisflokkurinn", "votes": 0.2, "elected": false }
+      ]
+    },
+    {
+      "year": 2022,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 24.5 },
+        { "id": "vidreisn", "votes": 5.2, "government": true},
+        {},
+        { "id": "flfolksins", "votes": 4.5 },
+        { "id": "midflokkur", "votes": 2.3, "elected": false },
+        { "id": "framsokn", "votes": 18.7 },
+        {},
+        { "id": "piratar", "votes": 11.6, "government": true },
+        { "id": "samfylking", "votes": 20.3, "government": true },
+        { "id": "vg", "votes": 4 },
+        { "id": "sosialistafl", "votes": 7.7 },
+        { "id": "abyrgfr", "votes": 0.8, "elected": false },
+        { "id": "rbb2022", "votes": 0.2, "elected": false }
+      ]
+    },
+    {
+      "year": 2026,
+      "parties": [
+        { "id": "sjalfstaedisflokkur", "votes": 32.9 },
+        { "id": "vidreisn", "votes": 10.7 },
+        {},
+        { "id": "flfolksins", "votes": 3.3, "elected": false },
+        { "id": "midflokkur", "votes": 11.4 },
+        { "id": "framsokn", "votes": 6.9 },
+        {},
+        { "id": "piratar", "votes": 1.9, "elected": false },
+        { "id": "samfylking", "votes": 18.3 },
+        { "id": "vinstrid", "name": "Vinstrið", "votes": 9.5 },
+        { "id": "sosialistafl", "votes": 4.1 },
+        { "id": "gd2026", "votes": 0.5, "elected": false },
+        { "id": "ob2026", "votes": 0.4, "elected": false }
+      ]
     }
   ],
   "connections": [
+    {
+      "from": { "year": 1930, "partyId": "althyduflokkurinn" },
+      "to": { "year": 1934, "partyId": "kommunistar" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 1934, "partyId": "althyduflokkurinn" },
+      "to": { "year": 1938, "partyId": "althyduflokkurinn+kommunistar" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1934, "partyId": "kommunistar" },
+      "to": { "year": 1938, "partyId": "althyduflokkurinn+kommunistar" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1938, "partyId": "althyduflokkurinn+kommunistar" },
+      "to": { "year": 1942, "partyId": "althyduflokkurinn" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1938, "partyId": "althyduflokkurinn+kommunistar" },
+      "to": { "year": 1942, "partyId": "sosialistar" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1958, "partyId": "althyduflokkurinn" },
+      "to": { "year": 1962, "partyId": "bandalag" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 1958, "partyId": "sosialistar" },
+      "to": { "year": 1962, "partyId": "bandalag" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1962, "partyId": "thjodvarnar" },
+      "to": { "year": 1966, "partyId": "bandalag" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 1970, "partyId": "sfv" },
+      "to": { "year": 1974, "partyId": "althyduflokkurinn+sfv" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1970, "partyId": "althyduflokkurinn" },
+      "to": { "year": 1974, "partyId": "althyduflokkurinn+sfv" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1974, "partyId": "althyduflokkurinn+sfv" },
+      "to": { "year": 1978, "partyId": "althyduflokkurinn" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1990, "partyId": "framsokn" },
+      "to": { "year": 1994, "partyId": "rvk" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1990, "partyId": "vettvangur" },
+      "to": { "year": 1994, "partyId": "rvk" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1990, "partyId": "bandalag" },
+      "to": { "year": 1994, "partyId": "rvk" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1990, "partyId": "kvenna" },
+      "to": { "year": 1994, "partyId": "rvk" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1990, "partyId": "mannsins" },
+      "to": { "year": 1998, "partyId": "mannsins" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 1998, "partyId": "sjalfstaedisflokkur" },
+      "to": { "year": 2002, "partyId": "frjalslyndi" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 2002, "partyId": "rvk" },
+      "to": { "year": 2006, "partyId": "framsokn" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 2002, "partyId": "rvk" },
+      "to": { "year": 2006, "partyId": "samfylking" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 2002, "partyId": "rvk" },
+      "to": { "year": 2006, "partyId": "vg" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 2006, "partyId": "frjalslyndi" },
+      "to": { "year": 2010, "partyId": "fha" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 2010, "partyId": "frjalslyndi" },
+      "to": { "year": 2014, "partyId": "dogun" },
+      "type": "solid"
+    },
+    {
+      "from": { "year": 2010, "partyId": "besti" },
+      "to": { "year": 2014, "partyId": "bf" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 2010, "partyId": "vg" },
+      "to": { "year": 2014, "partyId": "althydufylking" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 2014, "partyId": "sjalfstaedisflokkur" },
+      "to": { "year": 2018, "partyId": "vidreisn" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 2014, "partyId": "sjalfstaedisflokkur" },
+      "to": { "year": 2018, "partyId": "islthj" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 2014, "partyId": "framsokn" },
+      "to": { "year": 2018, "partyId": "midflokkur" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 2014, "partyId": "framsokn" },
+      "to": { "year": 2018, "partyId": "bo2018" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 2018, "partyId": "althydufylking" },
+      "to": { "year": 2022, "partyId": "sosialistafl" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 2022, "partyId": "sosialistafl" },
+      "to": { "year": 2026, "partyId": "vinstrid" },
+      "type": "dashed"
+    },
+    {
+      "from": { "year": 2022, "partyId": "vg" },
+      "to": { "year": 2026, "partyId": "vinstrid" },
+      "type": "solid"
+    }
   ]
 }

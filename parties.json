@@ -1,0 +1,540 @@
+[
+  {
+    "id": "borgara",
+    "name": "Borgara-flokkurinn",
+    "joinedTo": "ihald"
+  },
+  {
+    "id": "framsokn",
+    "name": "Framsóknarflokkurinn",
+    "formed": 1916,
+    "logos": {
+      "1923": "images/framsokn1.png",
+      "2007": "images/framsokn2.png",
+      "2009": "images/framsokn1.png",
+      "2013": "images/framsokn3.png",
+      "2016": "images/framsokn1.png",
+      "2021": "images/framsokn4.png"
+    }
+  },
+  {
+    "id": "althyduflokkurinn",
+    "name": "Alþýðuflokkurinn",
+    "formed": 1916,
+    "joinedTo": "samfylking",
+    "logos": {
+      "1923": "images/althyduflokkurinn.png"
+    }
+  },
+  {
+    "id": "ihald",
+    "name": "Íhaldsflokkurinn",
+    "joinedTo": "sjalfstaedisflokkur"
+  },
+  {
+    "id": "frjalslyndir",
+    "name": "Frjálslyndir",
+    "splitFrom": [ "borgara" ],
+    "joinedTo": "sjalfstaedisflokkur"
+  },
+  {
+    "id": "sjalfstaedisflokkur",
+    "name": "Sjálfstæðisflokkurinn",
+    "formed": 1929,
+    "logos": {
+      "1931": "images/sjalfstaedis1.jpg",
+      "1991": "images/sjalfstaedis2.png",
+      "2017": "images/sjalfstaedis3.jpg"
+    }
+  },
+  {
+    "id": "kommunistar",
+    "name": "Kommúnistaflokkur Íslands",
+    "splitFrom": [ "althyduflokkurinn" ],
+    "joinedTo": "sosialistar"
+  },
+  {
+    "id": "thjodernishreyfingin",
+    "name": "Þjóðernishreyfingin",
+    "formed": 1933,
+    "disbanded": 1934,
+    "splitFrom": [ "sjalfstaedisflokkur", "framsokn" ],
+    "logos": {
+      "1933": "images/thjodernissinnar.png"
+    }
+  },
+  {
+    "id": "thjodernissinnar",
+    "name": "Þjóðernissinnar",
+    "formed": 1934,
+    "disbanded": 1944,
+    "splitFrom": [ "thjodernishreyfingin" ],
+    "logos": {
+      "1934": "images/thjodernissinnar.png"
+    }
+  },
+  {
+    "id": "baenda",
+    "name": "Bændaflokkurinn",
+    "splitFrom": [ "framsokn" ]
+  },
+  {
+    "id": "frjalslyndirv",
+    "name": "Frjálslyndir vinstrimenn",
+    "splitFrom": [ "framsokn" ]
+  },
+  {
+    "id": "sosialistar",
+    "name": "Sósíalista-flokkurinn",
+    "splitFrom": [ "althyduflokkurinn" ],
+    "joinedTo": "bandalag",
+    "logos": {
+      "1942": "images/sosialistar1.png"
+    }
+  },
+  {
+    "id": "thjodvarnar",
+    "name": "Þjóðvarnar-flokkurinn"
+  },
+  {
+    "id": "lydveldis",
+    "name": "Lýðveldis-flokkurinn"
+  },
+  {
+    "id": "bandalag",
+    "name": "Alþýðubandalagið",
+    "splitFrom": [ "althyduflokkurinn" ],
+    "joinedTo": "samfylking",
+    "logos": {
+      "1956": "images/bandalag.jpg"
+    }
+  },
+  {
+    "id": "ohadilyd",
+    "name": "Óháði lýðræðisflokkurinn",
+    "splitFrom": [ "althyduflokkurinn" ]
+  },
+  {
+    "id": "sfv",
+    "name": "Samtök frjálslyndra og vinstrimanna",
+    "splitFrom": [ "bandalag" ],
+    "logos": {
+      "1970": "images/sfv.png"
+    }
+  },
+  {
+    "id": "f",
+    "name": "Framboðsflokkurinn"
+  },
+  {
+    "id": "komm",
+    "name": "Kommúnistaflokkur Íslands",
+    "logos": {
+      "1974": "images/komm.png"
+    }
+  },
+  {
+    "id": "fylking",
+    "name": "Fylking",
+    "logos": {
+      "1974": "images/fylking1.png",
+      "1978": "images/fylking2.png"
+    }
+  },
+  {
+    "id": "lyd",
+    "name": "Lýðræðisflokkurinn"
+  },
+  {
+    "id": "stj",
+    "name": "Stjórnmálaflokkurinn"
+  },
+  {
+    "id": "hinn",
+    "name": "Hinn flokkurinn"
+  },
+  {
+    "id": "sol",
+    "name": "Sólskinsflokkurinn"
+  },
+  {
+    "id": "bandaja",
+    "name": "Bandalag jafnaðarmanna",
+    "splitFrom": [ "althyduflokkurinn" ],
+    "logos": {
+      "1983": "images/bandaja.jpg"
+    }
+  },
+  {
+    "id": "kvenna",
+    "name": "Kvennalistinn",
+    "joinedTo": "samfylking",
+    "logos": {
+      "1982": "images/kvenna.png"
+    }
+  },
+  {
+    "id": "borgarafl",
+    "name": "Borgaraflokkurinn",
+    "logos": {
+      "1987": "images/borgara.svg"
+    }
+  },
+  {
+    "id": "mannsins",
+    "name": "Flokkur mannsins",
+    "logos": {
+      "1986": "images/humanistar.png"
+    }
+  },
+  {
+    "id": "thjodar",
+    "name": "Þjóðarflokkurinn",
+    "formed": null
+  },
+  {
+    "id": "humanistarthjod",
+    "name": "Þjóðarflokkurinn / Flokkur mannsins",
+    "formed": null
+  },
+  {
+    "id": "heima",
+    "name": "Heimastjórnarsamtökin",
+    "formed": null
+  },
+  {
+    "id": "graent",
+    "name": "Grænt framboð",
+    "formed": null
+  },
+  {
+    "id": "ofga",
+    "name": "Samtök öfgasinnaðra jafnaðarmanna",
+    "formed": null
+  },
+  {
+    "id": "verka",
+    "name": "Verkamannaflokkur Íslands",
+    "formed": null
+  },
+  {
+    "id": "natturu",
+    "name": "Náttúrulagaflokkurinn",
+    "formed": null
+  },
+  {
+    "id": "kristileg",
+    "name": "Kristileg stjórnmálasamtök",
+    "formed": null
+  },
+  {
+    "id": "vettvangur",
+    "name": "Nýr vettvangur",
+    "logos": {
+      "1990": "images/nyrvettvangur.png"
+    }
+  },
+  {
+    "id": "frjalslyndir",
+    "name": "Frjálslyndir",
+    "logos": {
+      "1991": "images/frjalslyndir.png"
+    }
+  },
+  {
+    "id": "rvk",
+    "name": "Reykjavíkurlistinn",
+    "logos": {
+      "1994": "images/rvk.jpg"
+    }
+  },
+  {
+    "id": "thjodvaki",
+    "name": "Þjóðvaki",
+    "logos": {
+      "1995": "images/Thjodvaki.png"
+    }
+  },
+  {
+    "id": "frjalslyndi",
+    "name": "Frjálslyndi flokkurinn",
+    "logos": {
+      "1999": "images/frjalslyndi.png"
+    }
+  },
+  {
+    "id": "samfylking",
+    "name": "Samfylkingin",
+    "formed": 1999,
+    "logos": {
+      "1999": "images/samfylking1.png",
+      "2003": "images/samfylking2.png",
+      "2021": "images/samfylking3.png",
+      "2024": "images/samfylking4.avif"
+    }
+  },
+  {
+    "id": "vg",
+    "name": "Vinstri grænir",
+    "formed": 1999,
+    "logos": {
+      "1999": "images/vg1.png",
+      "2016": "images/vg2.png",
+      "2021": "images/vg3.png"
+    }
+  },
+  {
+    "id": "humanistar",
+    "name": "Húmanistaflokkurinn",
+    "logos": {
+      "1999": "images/humanistar1.png",
+      "2013": "images/humanistar2.png"
+    }
+  },
+  {
+    "id": "anarkistar",
+    "name": "Anarkistar á Íslandi",
+    "logos": {
+      "1999": "images/anarkistar.png"
+    }
+  },
+  {
+    "id": "afl",
+    "name": "Nýtt afl",
+    "logos": {
+      "2003": "images/afl.png"
+    }
+  },
+  {
+    "id": "islandshr",
+    "name": "Íslandshreyfingin",
+    "logos": {
+      "2007": "images/Islandshreyfingin.svg"
+    }
+  },
+  {
+    "id": "borgarahr",
+    "name": "Borgarahreyfingin",
+    "logos": {
+      "2009": "images/borgarahreyfingin.png"
+    }
+  },
+  {
+    "id": "lydraedishr",
+    "name": "Lýðræðishreyfingin",
+    "formed": null
+  },
+  {
+    "id": "fha",
+    "name": "Framboð um heiðarleika og almennahagsmuni",
+    "logos": {
+      "2010": "images/fha.png"
+    }
+  },
+  {
+    "id": "besti",
+    "name": "Besti flokkurinn",
+    "logos": {
+      "2010": "images/besti.jpg"
+    }
+  },
+  {
+    "id": "rvkfr",
+    "name": "Listi Reykjavíkur-framboðsins",
+    "logos": {
+      "2010": "images/rvkfr.jpg"
+    }
+  },
+  {
+    "id": "hg",
+    "name": "Hægri grænir",
+    "logos": {
+      "2013": "images/hg.png"
+    }
+  },
+  {
+    "id": "sturla",
+    "name": "Sturla Jónsson",
+    "logos": {
+      "2013": "images/sturla.png"
+    }
+  },
+  {
+    "id": "dogun",
+    "name": "Dögun",
+    "logos": {
+      "2013": "images/dogun.jpg"
+    }
+  },
+  {
+    "id": "piratar",
+    "name": "Píratar",
+    "formed": 2012,
+    "logos": {
+      "2013": "images/Piratar1.png",
+      "2021": "images/Piratar2.png",
+      "2024": "images/Piratar3.png"
+    }
+  },
+  {
+    "id": "bf",
+    "name": "Björt framtíð",
+    "formed": 2012,
+    "logos": {
+      "2013": "images/bf.png"
+    }
+  },
+  {
+    "id": "regnboginn",
+    "name": "Regnboginn",
+    "logos": {
+      "2013": "images/regnboginn.png"
+    }
+  },
+  {
+    "id": "althydufylking",
+    "name": "Alþýðufylkingin",
+    "logos": {
+      "2013": "images/althydufylkingin.png"
+    }
+  },
+  {
+    "id": "flheim",
+    "name": "Flokkur heimilanna",
+    "logos": {
+      "2013": "images/Flokkur_Heimilanna_Logo.png"
+    }
+  },
+  {
+    "id": "lydvaktin",
+    "name": "Lýðræðisvaktin",
+    "logos": {
+      "2013": "images/lydvaktin.jpg"
+    }
+  },
+  {
+    "id": "landsb",
+    "name": "Landsbyggðarflokkurinn",
+    "logos": {
+      "2013": "images/landsb.png"
+    }
+  },
+  {
+    "id": "islthj",
+    "name": "Íslenska þjóðfylkingin",
+    "logos": {
+      "2016": "images/islthjod.jpg"
+    }
+  },
+  {
+    "id": "vidreisn",
+    "name": "Viðreisn",
+    "formed": 2016,
+    "logos": {
+      "2016": "images/vidreisn.png",
+      "2021": "images/vidreisn2.png"
+    }
+  },
+  {
+    "id": "flfolksins",
+    "name": "Flokkur fólksins",
+    "formed": 2016,
+    "logos": {
+      "2016": "images/flfolksins1.png",
+      "2018": "images/flfolksins1_5.png",
+      "2021": "images/flfolksins2.png"
+    }
+  },
+  {
+    "id": "midflokkur",
+    "name": "Miðflokkurinn",
+    "formed": 2017,
+    "logos": {
+      "2017": "images/midflokkur1.png",
+      "2021": "images/midflokkur2.png"
+    }
+  },
+  {
+    "id": "sosialistafl",
+    "name": "Sósíalistaflokkur Íslands",
+    "formed": 2017,
+    "logos": {
+      "2017": "images/sosialistar2.png"
+    }
+  },
+  {
+    "id": "bo2018",
+    "name": "Borgin okkar",
+    "formed": 2018,
+    "logos": {
+      "2018": "images/bo2018.jpg"
+    }
+  },
+  {
+    "id": "kh2018",
+    "name": "Kvennahreyfingin",
+    "formed": 2018,
+    "logos": {
+      "2018": "images/kh2018.jpg"
+    }
+  },
+  {
+    "id": "hl2018",
+    "name": "Höfuðborgarlistinn",
+    "formed": 2018,
+    "logos": {
+      "2018": "images/hl2018.png"
+    }
+  },
+  {
+    "id": "kl2018",
+    "name": "Karlalistinn",
+    "formed": 2018,
+    "logos": {
+      "2018": "images/kl2018.png"
+    }
+  },
+  {
+    "id": "frelsisflokkur",
+    "name": "Frelsisflokkurinn",
+    "formed": 2018,
+    "logos": {
+      "2018": "images/frelsisflokkur.jpg"
+    }
+  },
+  {
+    "id": "abyrgfr",
+    "name": "Ábyrg framtíð",
+    "logos": {
+      "2021": "images/abyrgFramtid.png"
+    }
+  },
+  {
+    "id": "rbb2022",
+    "name": "Reykjavík besta borgin",
+    "logos": {
+      "2021": "images/rbb2022.webp"
+    }
+  },
+  {
+    "id": "lydraedisfl",
+    "name": "Lýðræðisflokkurinn",
+    "logos": {
+      "2024": "images/lydraedisfl.png"
+    }
+  },
+  {
+    "id": "frjalydfl",
+    "name": "Frjálslyndi lýðræðisflokkurinn",
+    "logos": {
+      "2021": "images/frjalydfl.png"
+    }
+  },
+  {
+    "id": "vinstrid",
+    "name": "Vinstrið",
+    "logos": {
+      "2021": "images/vinstrid.png"
+    }
+  }
+]
