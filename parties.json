@@ -534,7 +534,21 @@
     "id": "vinstrid",
     "name": "Vinstrið",
     "logos": {
-      "2021": "images/vinstrid.png"
+      "2026": "images/vinstrid.png"
+    }
+  },
+  {
+    "id": "ob2026",
+    "name": "Okkar borg",
+    "logos": {
+      "2026": "images/ob2026.png"
+    }
+  },
+  {
+    "id": "gd2026",
+    "name": "Góðan daginn",
+    "logos": {
+      "2026": "images/gd2026.png"
     }
   }
 ]

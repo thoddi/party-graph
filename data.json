@@ -450,8 +450,8 @@
         { "id": "frjalslyndi", "votes": 2.2, "elected": false },
         { "id": "borgarahr", "name": "Borgarahreyfingin", "votes": 7.2 },
         {},
-        {},
         { "id": "samfylking", "votes": 29.8, "government": true },
+        {},
         {},
         { "id": "framsokn", "votes": 14.8 },
         {},
@@ -466,11 +466,11 @@
         { "id": "sjalfstaedisflokkur", "votes": 26.7, "government": true },
         { "id": "sturla", "name": "Sturla Jónsson", "votes": 0.1, "elected": false },
         { "id": "dogun", "name": "Dögun", "votes": 3.1, "elected": false },
-        { "id": "piratar", "name": "Píratar", "votes": 5.1 },
         { "id": "samfylking", "votes": 12.9 },
+        { "id": "piratar", "name": "Píratar", "votes": 5.1 },
         {},
-        { "id": "bf", "name": "Björt framtíð", "votes": 8.2 },
         { "id": "framsokn", "votes": 24.4, "government": true },
+        { "id": "bf", "name": "Björt framtíð", "votes": 8.2 },
         { "id": "regnboginn", "name": "Regnboginn", "votes": 1.1, "elected": false },
         { "id": "vg", "votes": 10.9 },
         { "id": "althydufylking", "name": "Alþýðufylkingin", "votes": 0.1, "elected": false },
@@ -488,11 +488,11 @@
         { "id": "vidreisn", "name": "Viðreisn", "votes": 10.5, "government": true },
         { "id": "dogun", "votes": 1.7, "elected": false },
         { "id": "samfylking", "votes": 5.7 },
-        { "id": "piratar", "name": "Píratar", "votes": 14.5 },
         { "id": "flfolksins", "name": "Flokkur fólksins", "votes": 3.5, "elected": false },
-        { "id": "bf", "votes": 7.2, "government": true },
+        { "id": "piratar", "name": "Píratar", "votes": 14.5 },
         { "id": "framsokn", "votes": 11.5 },
         {},
+        { "id": "bf", "votes": 7.2, "government": true },
         { "id": "vg", "votes": 15.9 },
         { "id": "althydufylking", "votes": 0.3, "elected": false },
         { "id": "humanistar", "votes": 0, "elected": false }
@@ -507,11 +507,11 @@
         { "id": "samfylking", "votes": 12.1 },
         { "id": "dogun", "votes": 0.1, "elected": false },
         { "id": "flfolksins", "votes": 6.9 },
-        { "id": "piratar", "votes": 9.2 },
         { "id": "midflokkur", "votes": 10.9 },
-        { "id": "bf", "votes": 1.2,  "elected": false },
+        { "id": "piratar", "votes": 9.2 },
         { "id": "framsokn", "votes": 10.7, "government": true },
         { "id": "vg", "votes": 16.9, "government": true },
+        { "id": "bf", "votes": 1.2,  "elected": false },
         { "id": "althydufylking", "votes": 0.2, "elected": false }
       ]
     },
@@ -526,8 +526,8 @@
         { "id": "flfolksins", "votes": 8.9 },
         { "id": "midflokkur", "votes": 5.5 },
         { "id": "piratar", "votes": 8.6 },
-        { "id": "framsokn", "votes": 17.3, "government": true },
         { "id": "vg", "votes": 12.6, "government": true },
+        { "id": "framsokn", "votes": 17.3, "government": true },
         { "id": "sosialistafl", "name": "Sósíalistaflokkur Íslands", "votes": 4.1, "elected": false },
         { "id": "abyrgfr", "votes": 0.1, "elected": false }
       ]
@@ -543,8 +543,8 @@
         { "id": "midflokkur", "votes": 12.1 },
         { "id": "flfolksins", "votes": 13.8, "government": true },
         { "id": "piratar", "votes": 3, "elected": false },
-        { "id": "framsokn", "votes": 7.8 },
         { "id": "vg", "votes": 2.3, "elected": false },
+        { "id": "framsokn", "votes": 7.8 },
         { "id": "sosialistafl", "votes": 4, "elected": false },
         { "id": "abyrgfr", "votes": 0, "elected": false }
       ]
@@ -737,23 +737,18 @@
       "type": "solid"
     },
     {
-      "from": { "year": 2009, "partyId": "borgarhr" },
+      "from": { "year": 2009, "partyId": "borgarahr" },
       "to": { "year": 2013, "partyId": "dogun" },
-      "type": "dashed"
+      "type": "solid"
     },
     {
       "from": { "year": 2009, "partyId": "frjalslyndi" },
       "to": { "year": 2013, "partyId": "dogun" },
-      "type": "dashed"
+      "type": "solid"
     },
     {
       "from": { "year": 2009, "partyId": "frjalslyndi" },
       "to": { "year": 2013, "partyId": "sturla" },
-      "type": "dashed"
-    },
-    {
-      "from": { "year": 2009, "partyId": "samfylking" },
-      "to": { "year": 2013, "partyId": "bf" },
       "type": "dashed"
     },
     {
