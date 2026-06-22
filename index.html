@@ -1,118 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="is">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Election Parties Visualization</title>
   <style>
-    body { font-family: sans-serif; }
-    .container { display: flex; align-items: flex-start; }
-    .column {
-      margin: 0 40px;
-    }
-    .party {
-      width: 120px;
-      height: 120px;
-      border: 2px solid #ccc;
-      border-radius: 18px;
-      margin: 18px 0;
-      padding: 8px;
-      text-align: center;
-      background: #fff;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      box-sizing: border-box;
-      transition: border-color 0.2s;
-    }
-    .party.elected-false {
-      border-color: #e22;
-    }
-    .party img {
-      max-width: 80px;
-      max-height: 80px;
-      display: block;
-      margin: 0 auto 4px;
-    }
-    .year {
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    #svg-lines {
-      position: absolute;
-      left: 0;
-      top: 0;
-      z-index: 0;
-    }
-    .main-content {
-      position: relative;
-      min-height: 600px;
-    }
-    .party.empty-party {
-      border: none !important;
-      background: none !important;
-      box-shadow: none !important;
-      pointer-events: none;
-    }
-    .party.government {
-      box-shadow: 0 0 8px 3px #ffe066cc, 0 0 16px 6px #ffe06688;
-      background: #fff;
-    }
-    #svg-popover {
-      position: fixed;
-      pointer-events: none;
-      background: #fffbe6;
-      color: #333;
-      border: 1px solid #ffe066;
-      border-radius: 6px;
-      box-shadow: 0 2px 8px #0002;
-      padding: 8px 12px;
-      font-size: 15px;
-      z-index: 1000;
-      display: none;
-      max-width: 320px;
-      white-space: pre-line;
+    * { box-sizing: border-box; }
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 16px;
     }
   </style>
 </head>
 <body>
-  <h1 style="display: flex; align-items: center; gap: 16px;">
-    Election Parties Visualization
-    <button id="optimize-order-btn" style="font-size: 16px; padding: 4px 12px;">Raða flokkum optimalt</button>
-  </h1>
-  <div style="margin-bottom: 18px;">
-    <button id="tab-althingi" class="tab-btn" style="font-size:16px; padding:4px 16px; border-radius:8px 8px 0 0; border:1px solid #ccc; border-bottom:none; background:#ffe066; font-weight:bold;">Alþingiskosningar</button>
-    <button id="tab-borgarstjorn" class="tab-btn" style="font-size:16px; padding:4px 16px; border-radius:8px 8px 0 0; border:1px solid #ccc; border-bottom:none; background:#eee;">Borgarstjórnarkosningar</button>
-  </div>
-  <div class="main-content">
-    <svg id="svg-lines"></svg>
-    <div class="container" id="columns"></div>
-  </div>
-  <!-- Modal for optimization -->
-  <div id="optimize-modal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:#0008; z-index:2000; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:10px; padding:32px 24px; min-width:340px; max-width:90vw; max-height:90vh; box-shadow:0 8px 32px #0004; position:relative;">
-      <button id="close-optimize-modal" style="position:absolute; right:12px; top:12px; font-size:20px; background:none; border:none; cursor:pointer;">×</button>
-      <h2>Veldu reiknirit fyrir uppröðun</h2>
-      <div style="margin-bottom:16px;">
-        <label><input type="radio" name="algo" value="barycenter" checked> Barycenter/Median röðun</label><br>
-        <label><input type="radio" name="algo" value="greedy"> Greedy röðun</label><br>
-        <label><input type="radio" name="algo" value="custom"> Sérsniðið (ef til)</label>
-      </div>
-      <button id="run-optimize" style="margin-bottom:16px;">Keyra útreikning</button>
-      <div id="optimize-result" style="margin-bottom:16px;"></div>
-      <div id="optimize-actions" style="display:none; margin-bottom:16px;">
-        <button id="apply-order">Endurteikna með þessari röðun</button>
-        <button id="download-order">Sækja röðun (JSON)</button>
-        <div style="margin-top:10px;">
-          <label>Settu inn röðunarskrá (JSON):</label><br>
-          <textarea id="import-order-json" style="width:100%;height:60px;"></textarea>
-          <button id="import-order-btn">Nota þessa röðun</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script type="module" src="main.js"></script>
+  <election-graph></election-graph>
+
+  <script type="module" src="src/components/election-graph.js"></script>
 </body>
 </html>
