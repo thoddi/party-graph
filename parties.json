@@ -235,8 +235,9 @@
     }
   },
   {
-    "id": "frjalslyndir",
+    "id": "frjalslyndir1991",
     "name": "Frjálslyndir",
+    "splitFrom": [ "borgarafl", "samtok" ],
     "logos": {
       "1991": "images/frjalslyndir.png"
     }
@@ -342,7 +343,7 @@
     "id": "rvkfr",
     "name": "Listi Reykjavíkur-framboðsins",
     "logos": {
-      "2010": "images/rvkfr.jpg"
+      "2010": "images/rvkfr.png"
     }
   },
   {
@@ -550,5 +551,44 @@
     "logos": {
       "2026": "images/gd2026.png"
     }
+  },
+  {
+    "id": "samtok",
+    "name": "Samtök um jafnrétti og félagshyggju",
+    "splitFrom": [ "framsokn" ]
+  },
+  {
+    "id": "althyduflokkurinn+kommunistar",
+    "name": "Alþýðuflokkur & Kommúnistaflokkur",
+    "members": [ "althyduflokkurinn", "kommunistar" ]
+  },
+  {
+    "id": "althyduflokkurinn+sfv",
+    "name": "Alþýðuflokkur & SFV",
+    "members": [ "althyduflokkurinn", "sfv" ]
+  },
+  {
+    "id": "sosrvk",
+    "name": "Sósíalistafélag Reykjavíkur"
+  },
+  {
+    "id": "frj",
+    "name": "Frjálslyndir"
+  },
+  {
+    "id": "gf",
+    "name": "Grænt framboð"
+  },
+  {
+    "id": "laun",
+    "name": "Launalistinn"
+  },
+  {
+    "id": "hofsam",
+    "name": "Höfuðborgarsamtökin"
+  },
+  {
+    "id": "vhs",
+    "name": "Vinstri hægri snú"
   }
 ]

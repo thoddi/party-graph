@@ -61,7 +61,7 @@
         { "id": "sjalfstaedisflokkur", "votes": 49.5, "government": true },
         { "id": "framsokn", "votes": 7.3 },
         { "id": "althyduflokkurinn", "votes": 13.4 },
-        { "id": "sosialistar", "votes": 26.5},
+        { "id": "sosialistar", "votes": 19.1 },
         { "id": "thjodvarnar", "name": "Þjóðvarnar-flokkurinn", "votes": 10.2 }
       ]
     },
@@ -140,9 +140,9 @@
         { "id": "sjalfstaedisflokkur", "votes": 52.7, "government": true },
         {},
         { "id": "framsokn", "votes": 7 },
-        { "id": "althyduflokkurinn", "votes": 15.5 },
+        { "id": "althyduflokkurinn", "votes": 10 },
         { "id": "bandalag", "votes": 20.3 },
-        { "id": "kvenna", "votes": 11 },
+        { "id": "kvenna", "votes": 8.1 },
         { "id": "mannsins", "name": "Flokkur mannsins", "votes": 2, "elected": false }
       ]
     },

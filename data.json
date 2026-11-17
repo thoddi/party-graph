@@ -366,7 +366,7 @@
       "year": 1991,
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 38.6, "government": true },
-        { "id": "frjalslyndir", "votes": 0.6 },
+        { "id": "frjalslyndir1991", "votes": 0.6 },
         {},
         { "id": "framsokn", "votes": 18.9 },
         {},
@@ -658,12 +658,12 @@
     },
     {
       "from": { "year": 1987, "partyId": "borgarafl" },
-      "to": { "year": 1991, "partyId": "frjalslyndir" },
+      "to": { "year": 1991, "partyId": "frjalslyndir1991" },
       "type": "dashed"
     },
     {
       "from": { "year": 1987, "partyId": "samtok" },
-      "to": { "year": 1991, "partyId": "frjalslyndir" },
+      "to": { "year": 1991, "partyId": "frjalslyndir1991" },
       "type": "dashed"
     },
     {
