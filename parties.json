@@ -1,7 +1,8 @@
 [
   {
     "id": "borgara",
-    "name": "Borgara-flokkurinn",
+    "name": "Borgaraflokkurinn",
+    "displayName": "Borgara­flokkurinn",
     "joinedTo": "ihald"
   },
   {
@@ -40,6 +41,7 @@
   {
     "id": "sjalfstaedisflokkur",
     "name": "Sjálfstæðisflokkurinn",
+    "displayName": "Sjálfstæðis­flokkurinn",
     "formed": 1929,
     "logos": {
       "1931": "images/sjalfstaedis1.jpg",
@@ -50,6 +52,7 @@
   {
     "id": "kommunistar",
     "name": "Kommúnistaflokkur Íslands",
+    "displayName": "Kommúnista­flokkurinn",
     "splitFrom": [ "althyduflokkurinn" ],
     "joinedTo": "sosialistar"
   },
@@ -85,7 +88,8 @@
   },
   {
     "id": "sosialistar",
-    "name": "Sósíalista-flokkurinn",
+    "name": "Sósíalistaflokkurinn",
+    "displayName": "Sósíalista­flokkurinn",
     "splitFrom": [ "althyduflokkurinn" ],
     "joinedTo": "bandalag",
     "logos": {
@@ -94,11 +98,13 @@
   },
   {
     "id": "thjodvarnar",
-    "name": "Þjóðvarnar-flokkurinn"
+    "name": "Þjóðvarnarflokkurinn",
+    "displayName": "Þjóðvarnar­flokkurinn"
   },
   {
     "id": "lydveldis",
-    "name": "Lýðveldis-flokkurinn"
+    "name": "Lýðveldisflokkurinn",
+    "displayName": "Lýðveldis­flokkurinn"
   },
   {
     "id": "bandalag",
@@ -136,6 +142,10 @@
   {
     "id": "fylking",
     "name": "Fylking",
+    "names": {
+      "1978": "Fylking byltingarsinnaðra kommúnista",
+      "1979": "Fylking"
+    },
     "logos": {
       "1974": "images/fylking1.png",
       "1978": "images/fylking2.png"
@@ -183,6 +193,9 @@
   {
     "id": "mannsins",
     "name": "Flokkur mannsins",
+    "names": {
+      "1998": "Húmanistar"
+    },
     "logos": {
       "1986": "images/humanistar.png"
     }
@@ -341,7 +354,8 @@
   },
   {
     "id": "rvkfr",
-    "name": "Listi Reykjavíkur-framboðsins",
+    "name": "Listi Reykjavíkurframboðsins",
+    "displayName": "Listi Reykjavíkur­framboðsins",
     "logos": {
       "2010": "images/rvkfr.png"
     }
@@ -585,7 +599,8 @@
   },
   {
     "id": "hofsam",
-    "name": "Höfuðborgarsamtökin"
+    "name": "Höfuðborgarsamtökin",
+    "displayName": "Höfuðborgar­samtökin"
   },
   {
     "id": "vhs",

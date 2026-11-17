@@ -23,16 +23,18 @@ class PartyOrderer {
     const partyRowMap = {};
     data.elections.forEach((election) => {
       election.parties.forEach((p, idx) => {
-        if (p && p.id) partyRowMap[`${election.year}-${p.id}`] = idx;
+        if (p && p.id) partyRowMap[`${election.key}-${p.id}`] = idx;
       });
     });
 
-    function getFutureConnections(year, partyId) {
-      const nextIdx = data.elections.findIndex(e => e.year === year) + 1;
-      if (nextIdx <= 0 || nextIdx >= data.elections.length) return [];
-      const nextYear = data.elections[nextIdx].year;
+    function getFutureConnections(key, partyId) {
+      const currIdx = data.elections.findIndex(e => e.key === key);
+      const nextIdx = currIdx + 1;
+      if (currIdx < 0 || nextIdx >= data.elections.length) return [];
+      const year = data.elections[currIdx].year;
+      const nextKey = data.elections[nextIdx].key;
       const direct = (data.connections || [])
-        .filter(c => c.from.year === year && c.from.partyId === partyId && c.to.year === nextYear)
+        .filter(c => String(c.from.year) === key && c.from.partyId === partyId && String(c.to.year) === nextKey)
         .map(c => c.to.partyId);
       let groupSplits = [];
       if (data.groups) {
@@ -57,9 +59,9 @@ class PartyOrderer {
       const bary = currParties.map((p, idx) => {
         if (!p || !p.id) return { idx, id: null, bary: idx };
         const prevIdx = prevOrder.indexOf(p.id);
-        const futureConns = getFutureConnections(data.elections[i].year, p.id);
+        const futureConns = getFutureConnections(data.elections[i].key, p.id);
         const futureIdxs = futureConns
-          .map(pid => partyRowMap[`${data.elections[i + 1]?.year}-${pid}`])
+          .map(pid => partyRowMap[`${data.elections[i + 1]?.key}-${pid}`])
           .filter(x => typeof x === 'number');
         const futureBary = futureIdxs.length > 0
           ? futureIdxs.reduce((a, b) => a + b, 0) / futureIdxs.length
@@ -71,7 +73,7 @@ class PartyOrderer {
       const newOrder = bary.map(x => x.id);
       orders.push(newOrder);
       data.elections[i].parties.forEach((p) => {
-        if (p && p.id) partyRowMap[`${data.elections[i].year}-${p.id}`] = newOrder.indexOf(p.id);
+        if (p && p.id) partyRowMap[`${data.elections[i].key}-${p.id}`] = newOrder.indexOf(p.id);
       });
     }
     return orders;

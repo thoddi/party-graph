@@ -106,8 +106,8 @@ class ConnectionLayer extends HTMLElement {
         if (!prevParty || !prevParty.id) return;
         const currParty = curr.parties.find(p => p && p.id === prevParty.id);
         if (currParty) {
-          const fromBox = partyBoxes[`${prev.year}-${prevParty.id}`];
-          const toBox = partyBoxes[`${curr.year}-${currParty.id}`];
+          const fromBox = partyBoxes[`${prev.key}-${prevParty.id}`];
+          const toBox = partyBoxes[`${curr.key}-${currParty.id}`];
           this._drawLine(fromBox, toBox, 'solid', null, containerRect);
         }
       });
@@ -121,11 +121,11 @@ class ConnectionLayer extends HTMLElement {
     const boxes = {};
     columnElements.forEach((col, colIdx) => {
       if (!data.elections[colIdx]) return;
-      const year = data.elections[colIdx].year;
+      const key = data.elections[colIdx].key;
       const cards = col.getPartyCardElements();
       data.elections[colIdx].parties.forEach((party, pIdx) => {
         if (party && party.id && cards[pIdx]) {
-          boxes[`${year}-${party.id}`] = cards[pIdx];
+          boxes[`${key}-${party.id}`] = cards[pIdx];
         }
       });
     });
@@ -197,11 +197,11 @@ class ConnectionLayer extends HTMLElement {
 
       let yPositions = [];
       group.members.forEach(pid => {
-        const box = partyBoxes[`${data.elections[prevColIdx].year}-${pid}`];
+        const box = partyBoxes[`${data.elections[prevColIdx].key}-${pid}`];
         if (box) yPositions.push(this._getBoxCenter(box, containerRect).y);
       });
       group.splitsTo.forEach(pid => {
-        const box = partyBoxes[`${data.elections[nextColIdx].year}-${pid}`];
+        const box = partyBoxes[`${data.elections[nextColIdx].key}-${pid}`];
         if (box) yPositions.push(this._getBoxCenter(box, containerRect).y);
       });
 
@@ -216,7 +216,7 @@ class ConnectionLayer extends HTMLElement {
 
       // Lines from members to group center
       group.members.forEach(pid => {
-        const box = partyBoxes[`${data.elections[prevColIdx].year}-${pid}`];
+        const box = partyBoxes[`${data.elections[prevColIdx].key}-${pid}`];
         if (!box) return;
         const from = this._getBoxCenter(box, containerRect);
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -232,7 +232,7 @@ class ConnectionLayer extends HTMLElement {
 
       // Lines from group center to splitsTo
       group.splitsTo.forEach(pid => {
-        const box = partyBoxes[`${data.elections[nextColIdx].year}-${pid}`];
+        const box = partyBoxes[`${data.elections[nextColIdx].key}-${pid}`];
         if (!box) return;
         const to = this._getBoxCenter(box, containerRect);
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');

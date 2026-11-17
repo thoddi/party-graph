@@ -1,5 +1,6 @@
 import PartyData from '../services/party-data.js';
 import PartyOrderer from '../services/party-orderer.js';
+import { normalizeElections } from '../services/election-data.js';
 import './election-column.js';
 import './connection-layer.js';
 import './party-group.js';
@@ -195,7 +196,7 @@ class ElectionGraph extends HTMLElement {
     const file = type === 'althingi' ? 'data.json' : 'borgarstjorn_data.json';
     const data = await this._loadJson(file);
     data.groups = this._groups;
-    this._electionData[type] = data;
+    this._electionData[type] = normalizeElections(data);
   }
 
   get _data() {
@@ -215,6 +216,8 @@ class ElectionGraph extends HTMLElement {
     data.elections.forEach(election => {
       const col = document.createElement('election-column');
       col.setAttribute('year', election.year);
+      col.setAttribute('label', election.label);
+      col.setAttribute('election-key', election.key);
       col.parties = election.parties;
       this._columnsEl.appendChild(col);
     });
