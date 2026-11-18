@@ -1,7 +1,8 @@
 import PartyData from '../services/party-data.js';
 import { normalizeElections } from '../services/election-data.js';
 import { buildGraph } from '../services/graph-model.js';
-import { layoutGraph } from '../services/layout.js';
+import { layoutGraph, savedLayout } from '../services/layout.js';
+import { DATASETS } from '../services/datasets.js';
 import './election-column.js';
 import './connection-layer.js';
 import './party-group.js';
@@ -90,6 +91,7 @@ class ElectionGraph extends HTMLElement {
 
   async connectedCallback() {
     await PartyData.load();
+    this._savedLayouts = await this._loadSavedLayouts();
     await this._loadElectionData('althingi');
     await this._loadElectionData('borgarstjorn');
 
@@ -104,8 +106,18 @@ class ElectionGraph extends HTMLElement {
     return resp.json();
   }
 
+  /** layout.json, written by tools/layout.mjs; missing or broken is fine. */
+  async _loadSavedLayouts() {
+    try {
+      const resp = await fetch('layout.json');
+      return resp.ok ? await resp.json() : {};
+    } catch {
+      return {};
+    }
+  }
+
   async _loadElectionData(type) {
-    const file = type === 'althingi' ? 'data.json' : 'borgarstjorn_data.json';
+    const file = DATASETS[type];
     const data = await this._loadJson(file);
     this._electionData[type] = normalizeElections(data);
     this._graphs[type] = buildGraph(data, PartyData.partiesById, type);
@@ -142,10 +154,20 @@ class ElectionGraph extends HTMLElement {
     return this._graphs[this._currentType];
   }
 
-  /** Where the cards go in the current tab. Worked out on first use, then kept. */
+  /**
+   * Where the cards go in the current tab: the saved layout from layout.json while it still
+   * matches the data, otherwise worked out here (a quicker search). Kept once known.
+   */
   get _layout() {
     const type = this._currentType;
-    if (!this._layouts[type]) this._layouts[type] = layoutGraph(this._electionData[type], this._graphs[type]);
+    if (!this._layouts[type]) {
+      const data = this._electionData[type], graph = this._graphs[type];
+      this._layouts[type] = savedLayout(this._savedLayouts?.[type], data, graph);
+      if (!this._layouts[type]) {
+        console.info(`${type}: layout.json is missing or out of date; run node tools/layout.mjs`);
+        this._layouts[type] = layoutGraph(data, graph);
+      }
+    }
     return this._layouts[type];
   }
 

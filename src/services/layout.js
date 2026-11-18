@@ -45,8 +45,12 @@ export const ROW_GAP = 18;
 export const ROW_PITCH = CARD_SIZE + ROW_GAP;
 
 export const COST = {
-  length: { continuation: 1, succession: 1, defection: 0.6 },  // per row of vertical distance
-  longJump: 0.15,     // times the distance squared, on top of the above
+  line: { continuation: 1, succession: 1, defection: 0.6 },    // weight of each kind of line
+  bend: 3,            // a line costs 0 when level, 1 when it moves one row, then times `bend` for
+                      // every further row (1, 3, 9, 27…): one 3-row step costs more than two 2-row steps
+  hole: 0.15,         // an empty row inside a column (cards below it), per run of columns where it
+                      // stays empty: times the run length squared, so long empty bands are expensive
+  oneOff: 3,          // a party with no lines at all, above a card that has lines (same column)
   crossing: 8,
   rank: 2,            // when a card sits above a bigger party's card in the same column: times
                       // (big rank - small rank) / sqrt(big rank), so a tiny party above a mid-sized
@@ -70,8 +74,8 @@ function seeded(seed) {
 }
 
 function lengthWeight(edge) {
-  if (!edge.explicit) return COST.length.continuation;
-  return edge.kind === 'defection' ? COST.length.defection : COST.length.succession;
+  if (!edge.explicit) return COST.line.continuation;
+  return edge.kind === 'defection' ? COST.line.defection : COST.line.succession;
 }
 
 /** Cards ("c|key|id") and placeholders ("d|tag|col"), and the links between adjacent columns. */
@@ -149,7 +153,7 @@ function prepare(data, graph) {
         const from = byId.get(cardId(s.key, s.id));
         const to = byId.get(cardId(t.key, t.id));
         if (!from || !to || from.col >= to.col) continue;
-        const w = (s.kind === 'defection' || t.kind === 'defection') ? COST.length.defection : COST.length.succession;
+        const w = (s.kind === 'defection' || t.kind === 'defection') ? COST.line.defection : COST.line.succession;
         chain(from, to, w, `n${node.id}|${s.id}>${t.id}`);
       }
     }
@@ -165,15 +169,54 @@ function prepare(data, graph) {
 
 const linkLength = l => {
   const d = Math.abs(l.a.row - l.b.row);
-  return l.w * (d + COST.longJump * d * d);
+  return d === 0 ? 0 : l.w * Math.pow(COST.bend, d - 1);
 };
 const itemCost = item => (COST.compact + COST.top * item.rank) * item.row;
-/** Rank penalty between two cards of one column: the smaller one should be below. */
+/** Penalty between two cards of one column: one-off parties and smaller parties should be below. */
 const rankCost = (x, y) => {
+  const xOne = x.links.length === 0, yOne = y.links.length === 0;
+  if (xOne !== yOne) {
+    // a one-off party (no lines) belongs below every party that has lines
+    const [one, other] = xOne ? [x, y] : [y, x];
+    return one.row < other.row ? COST.oneOff : 0;
+  }
   if (x.rank === y.rank) return 0;
   const [big, small] = x.rank > y.rank ? [x, y] : [y, x];
   return big.row > small.row ? COST.rank * (big.rank - small.rank) / Math.sqrt(big.rank) : 0;
 };
+/**
+ * Cost of the empty rows ("holes": empty, with something below in the same column) in
+ * runs that touch the given columns. Each run is counted once.
+ */
+function holeCost(occ, cols) {
+  const bottom = new Map();
+  const lowest = c => {
+    if (!bottom.has(c)) {
+      let b = -1;
+      for (let r = occ[c].length - 1; r >= 0; r--) if (occ[c][r]) { b = r; break; }
+      bottom.set(c, b);
+    }
+    return bottom.get(c);
+  };
+  const isHole = (c, r) => c >= 0 && c < occ.length && !occ[c][r] && r < lowest(c);
+  const seen = new Set();
+  let cost = 0;
+  for (const c of cols) {
+    for (let r = 0; r < occ[c].length; r++) {
+      if (!isHole(c, r)) continue;
+      let a = c, b = c;
+      while (isHole(a - 1, r)) a--;
+      while (isHole(b + 1, r)) b++;
+      const key = r * 10000 + a;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const len = b - a + 1;
+      cost += COST.hole * len * len;
+    }
+  }
+  return cost;
+}
+
 const crosses = (l, m) => (l.a.row - m.a.row) * (l.b.row - m.b.row) < 0;
 
 /** Score of everything that involves the given items (each line, crossing and rank pair counted once). */
@@ -223,7 +266,11 @@ function totalCost(items, links, gaps) {
     }
   }
   parts.crossing = crossings * COST.crossing;
-  return { cost: cost + crossings * COST.crossing, crossings, parts };
+  const height = Math.max(0, ...items.map(i => i.row)) + 1;
+  const occ = gaps.map(() => new Array(height).fill(null));
+  for (const item of items) occ[item.col][item.row] = item;
+  parts.hole = holeCost(occ, occ.map((_, c) => c));
+  return { cost: cost + crossings * COST.crossing + parts.hole, crossings, parts };
 }
 
 /**
@@ -252,7 +299,8 @@ function levelRun(item) {
 function moveRun(run, row, occ, gaps, columnCards) {
   const affected = [...run];
   for (const item of run) { const o = occ[item.col][row]; if (o) affected.push(o); }
-  const before = localCost(affected, gaps, columnCards);
+  const cols = [...new Set(run.map(item => item.col))];
+  const before = localCost(affected, gaps, columnCards) + holeCost(occ, cols);
   for (const item of run) {
     const col = occ[item.col];
     const from = item.row;
@@ -262,7 +310,7 @@ function moveRun(run, row, occ, gaps, columnCards) {
     col[row] = item;
     item.row = row;
   }
-  return localCost(affected, gaps, columnCards) - before;
+  return localCost(affected, gaps, columnCards) + holeCost(occ, cols) - before;
 }
 
 function optimise(columns, links, gaps, height, options = {}) {
@@ -331,6 +379,38 @@ function optimise(columns, links, gaps, height, options = {}) {
 }
 
 /**
+ * Turns a layout saved by tools/layout.mjs back into what layoutGraph() returns, or null
+ * when it no longer matches the data.
+ */
+export function savedLayout(saved, data, graph) {
+  if (!saved || saved.fingerprint !== layoutFingerprint(data, graph)) return null;
+  const colOf = new Map(data.elections.map((e, i) => [e.key, i]));
+  return {
+    rows: data.elections.map(e => saved.rows[e.key] ?? {}),
+    edgePaths: graph.edges.map(e => (saved.edgePaths[`${e.fromKey}|${e.fromId}|${e.toKey}|${e.toId}`] ?? [])
+      .map(([key, row]) => ({ col: colOf.get(key), row }))),
+    rowCount: saved.rowCount,
+  };
+}
+
+/**
+ * Short text that changes whenever anything the layout depends on changes: the columns,
+ * their cards, the lines, the group nodes and the weights in COST. A saved layout
+ * (layout.json, written by tools/layout.mjs) is only used when its fingerprint matches.
+ */
+export function layoutFingerprint(data, graph) {
+  const input = JSON.stringify({
+    cols: data.elections.map(e => [e.key, e.parties.filter(p => p && p.id).map(p => `${p.id}:${p.votes ?? ''}`).sort()]),
+    edges: graph.edges.map(e => [e.fromKey, e.fromId, e.toKey, e.toId, e.kind, !!e.explicit]).map(String).sort(),
+    nodes: graph.nodes.map(n => [n.id, n.prevKey, n.nextKey, n.sources.map(x => x.id + x.kind), n.targets.map(x => x.id + x.kind)]).map(String).sort(),
+    cost: COST,
+  });
+  let h = 0x811c9dc5;                                 // FNV-1a
+  for (let i = 0; i < input.length; i++) { h ^= input.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16).padStart(8, '0');
+}
+
+/**
  * Start from given card rows (`start[col][cardId]`, e.g. a hand-made layout). Placeholders
  * go to the free row nearest the straight line between the cards they connect.
  */
@@ -358,9 +438,21 @@ function placeStart(columns, occ, start, height) {
 /**
  * @param {{elections: object[]}} data  normalised election data for one tab
  * @param {object} graph                from buildGraph()
- * @param {object} [options]            start: card rows to start from; anneal / improve: false to skip a stage
+ * @param {object} [options]            seeds: number of searches to run (best wins); start: card rows
+ *                                      to start from; anneal / improve: false to skip a stage
  */
 export function layoutGraph(data, graph, options = {}) {
+  // several independent searches (seeds 1..n); the lowest score wins
+  const seeds = options.seeds ?? 1;
+  let best = null;
+  for (let seed = 1; seed <= seeds; seed++) {
+    const result = layoutOnce(data, graph, { ...options, seed: options.seed ?? seed });
+    if (!best || result.cost < best.cost) best = result;
+  }
+  return best;
+}
+
+function layoutOnce(data, graph, options) {
   const { columns, links, gaps, byId, pathTags } = prepare(data, graph);
   const maxCount = Math.max(0, ...columns.map(c => c.length));
   const height = Math.max(MIN_ROWS, maxCount + SPARE_ROWS);

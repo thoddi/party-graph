@@ -62,9 +62,11 @@ function pieces(data, graph, rowOf, pathOf) {
 
 function measure(name, data, graph, rowOf, pathOf, height) {
   const { out, longLines } = pieces(data, graph, rowOf, pathOf);
-  let crossings = 0, length = 0;
+  // line steps between adjacent columns, by how many rows they move
+  const steps = [0, 0, 0, 0, 0];
+  let crossings = 0;
   for (let i = 0; i < out.length; i++) {
-    length += Math.abs(out[i].a - out[i].b);
+    steps[Math.min(4, Math.round(Math.abs(out[i].a - out[i].b)))]++;
     for (let j = i + 1; j < out.length; j++) {
       if (out[i].col !== out[j].col) continue;
       if ((out[i].a - out[j].a) * (out[i].b - out[j].b) < 0) crossings++;
@@ -78,8 +80,34 @@ function measure(name, data, graph, rowOf, pathOf, height) {
       if (cards.some(r => Math.abs(r - p.y) < 0.45)) hits++;
     }
   }
-  console.log(`${name.padEnd(14)} crossings ${String(crossings).padStart(4)}   length ${String(Math.round(length)).padStart(4)}   through-card ${String(hits).padStart(3)}   rows ${height}`);
-  return { crossings, length, hits, height };
+  // empty rows with something below them, and how long such a row stays empty
+  const used = data.elections.map((e, c) => {
+    const rows = new Set(e.parties.filter(x => x && x.id).map(x => rowOf(c, x.id)));
+    for (const pts of longLines) for (const p of pts.slice(1, -1)) if (p.col === c && Number.isInteger(p.y)) rows.add(p.y);
+    return rows;
+  });
+  const isHole = (c, r) => c >= 0 && c < used.length && !used[c].has(r) && r < Math.max(-1, ...used[c]);
+  let holes = 0, longest = 0;
+  for (let r = 0; r < height; r++) {
+    let run = 0;
+    for (let c = 0; c <= used.length; c++) {
+      if (isHole(c, r)) { holes++; run++; longest = Math.max(longest, run); } else run = 0;
+    }
+  }
+  // one-off parties (no line at all) that have a connected card below them
+  const linked = new Set();
+  const colOf = new Map(data.elections.map((e, i) => [e.key, i]));
+  for (const e of graph.edges) { linked.add(`${colOf.get(e.fromKey)}|${e.fromId}`); linked.add(`${colOf.get(e.toKey)}|${e.toId}`); }
+  for (const n of graph.nodes) for (const l of [...n.sources, ...n.targets]) linked.add(`${colOf.get(l.key)}|${l.id}`);
+  let oneOffHigh = 0;
+  data.elections.forEach((e, c) => {
+    const cards = e.parties.filter(x => x && x.id);
+    for (const x of cards) {
+      if (linked.has(`${c}|${x.id}`)) continue;
+      if (cards.some(y => linked.has(`${c}|${y.id}`) && rowOf(c, y.id) > rowOf(c, x.id))) oneOffHigh++;
+    }
+  });
+  console.log(`${name.padEnd(20)} steps 0/1/2/3/4+: ${steps.join('/').padEnd(16)} crossings ${String(crossings).padStart(3)}   empty cells ${String(holes).padStart(3)} (longest run ${String(longest).padStart(2)})   one-offs above linked ${String(oneOffHigh).padStart(2)}   through-card ${hits}   rows ${height}`);
 }
 
 let failed = false;
