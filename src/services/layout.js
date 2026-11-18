@@ -48,11 +48,11 @@ export const COST = {
   length: { continuation: 1, succession: 1, defection: 0.6 },  // per row of vertical distance
   longJump: 0.15,     // times the distance squared, on top of the above
   crossing: 8,
-  rank: 8,            // when a card sits above a bigger party's card in the same column: times
+  rank: 2,            // when a card sits above a bigger party's card in the same column: times
                       // (big rank - small rank) / sqrt(big rank), so a tiny party above a mid-sized
                       // one costs nearly as much as one big party above another
-  top: 0.3,           // per row, times the party's relative total vote share: big parties stay high
-  compact: 0.3,       // per row
+  top: 0.1,           // per row, times the party's relative total vote share: big parties stay high
+  compact: 0.1,       // per row
   rankPower: 1,       // rank = (total vote share relative to the biggest party) ^ rankPower
 };
 
@@ -60,7 +60,7 @@ const MIN_ROWS = 16;      // a column may always use this many rows
 const SPARE_ROWS = 2;     // rows the search may use beyond the fullest column
 const RUN_MOVES = 0.5;   // share of moves that move a level run instead of one item
 const ITERATIONS = 600;   // annealing moves per item
-const T_START = 15;
+const T_START = 8;
 const T_END = 0.02;
 
 /** Small deterministic random numbers, so the same data always gives the same layout. */
