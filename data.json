@@ -45,7 +45,6 @@
           "id": "sjalfstaedisflokkur",
           "votes": 43.3
         },
-        {},
         {
           "id": "framsokn",
           "votes": 35
@@ -68,7 +67,6 @@
           "id": "sjalfstaedisflokkur",
           "votes": 48
         },
-        {},
         {
           "id": "framsokn",
           "votes": 23.9
@@ -182,9 +180,7 @@
       "label": "1942 (október)",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 38.3 },
-        {},
         { "id": "framsokn", "votes": 26.4 },
-        {},
         { "id": "althyduflokkurinn", "votes": 14.1 },
         { "id": "sosialistar", "votes": 18.3 }
       ]
@@ -194,7 +190,6 @@
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 39.5, "government": true },
         { "id": "framsokn", "votes": 23.1, "government": true },
-        {},
         { "id": "althyduflokkurinn", "votes": 17.8, "government": true },
         { "id": "sosialistar", "votes": 19.5 }
       ]
@@ -277,7 +272,6 @@
         { "id": "framsokn", "votes": 25.3, "government": true },
         { "id": "althyduflokkurinn", "votes": 10.5 },
         { "id": "sfv", "votes": 8.9, "government": true },
-        {},
         { "id": "bandalag", "votes": 17.1 },
         { "id": "f", "votes": 2, "elected":  false }
       ]
@@ -313,9 +307,7 @@
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 35.4, "government": true },
         { "id": "framsokn", "votes": 24.9, "government": true },
-        {},
         { "id": "althyduflokkurinn", "votes": 17.4 },
-        {},
         { "id": "fylking", "votes": 0.4, "elected": false},
         { "id": "bandalag", "votes": 19.7 },
         { "id": "hinn", "votes": 0.2, "elected":  false },
@@ -326,7 +318,6 @@
       "date": "1983-04-23",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 38.6, "government": true },
-        {},
         { "id": "framsokn", "votes": 18.5, "government": true },
         { "id": "althyduflokkurinn", "votes": 11.7 },
         { "id": "bandaja", "votes": 7.3 },
@@ -354,9 +345,7 @@
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 38.6, "government": true },
         { "id": "frjalslyndir1991", "votes": 0.6 },
-        {},
         { "id": "framsokn", "votes": 18.9 },
-        {},
         { "id": "althyduflokkurinn", "votes": 15.5, "government": true },
         { "id": "kvenna", "votes": 8.3 },
         { "id": "bandalag", "votes": 14.4 },
@@ -371,15 +360,11 @@
       "date": "1995-04-08",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 37.1, "government": true },
-        {},
-        {},
-        {},
         { "id": "framsokn", "votes": 23.3, "government": true },
         { "id": "thjodvaki", "votes": 7.2 },
         { "id": "althyduflokkurinn", "votes": 11.4 },
         { "id": "kvenna", "votes": 4.9 },
         { "id": "bandalag", "votes": 14.3 },
-        {},
         { "id": "natturu", "votes": 0.6, "elected": false },
         { "id": "kristileg", "votes": 0.2, "elected": false }
       ]
@@ -389,11 +374,7 @@
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 40.7, "government": true },
         { "id": "frjalslyndi", "votes": 4.2 },
-        {},
-        {},
-        {},
         { "id": "framsokn", "votes": 18.4, "government": true },
-        {},
         { "id": "samfylking", "votes": 26.8 },
         { "id": "vg", "votes": 9.1 },
         { "id": "humanistar", "votes": 0.4, "elected": false },
@@ -406,9 +387,6 @@
         { "id": "sjalfstaedisflokkur", "votes": 33.7, "government": true },
         { "id": "afl", "votes": 1, "elected": false },
         { "id": "frjalslyndi", "votes": 7.4 },
-        {},
-        {},
-        {},
         { "id": "framsokn", "votes": 17.7, "government": true },
         { "id": "samfylking", "votes": 31 },
         { "id": "vg", "votes": 8.8 }
@@ -418,14 +396,10 @@
       "date": "2007-05-12",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 36.6, "government": true },
-        {},
         { "id": "frjalslyndi", "votes": 7.3 },
-        {},
         { "id": "islandshr", "votes": 3.3, "elected": false },
-        {},
         { "id": "samfylking", "votes": 26.8, "government": true },
         { "id": "framsokn", "votes": 11.7 },
-        {},
         { "id": "vg", "votes": 14.4 }
       ]
     },
@@ -433,15 +407,10 @@
       "date": "2009-04-25",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 23.7 },
-        {},
         { "id": "frjalslyndi", "votes": 2.2, "elected": false },
         { "id": "borgarahr", "votes": 7.2 },
-        {},
         { "id": "samfylking", "votes": 29.8, "government": true },
-        {},
-        {},
         { "id": "framsokn", "votes": 14.8 },
-        {},
         { "id": "vg", "votes": 21.7, "government": true },
         { "id": "lydraedishr", "votes": 0.6, "elected": false }
       ]
@@ -455,7 +424,6 @@
         { "id": "dogun", "votes": 3.1, "elected": false },
         { "id": "samfylking", "votes": 12.9 },
         { "id": "piratar", "votes": 5.1 },
-        {},
         { "id": "framsokn", "votes": 24.4, "government": true },
         { "id": "bf", "votes": 8.2 },
         { "id": "regnboginn", "votes": 1.1, "elected": false },
@@ -478,7 +446,6 @@
         { "id": "flfolksins", "votes": 3.5, "elected": false },
         { "id": "piratar", "votes": 14.5 },
         { "id": "framsokn", "votes": 11.5 },
-        {},
         { "id": "bf", "votes": 7.2, "government": true },
         { "id": "vg", "votes": 15.9 },
         { "id": "althydufylking", "votes": 0.3, "elected": false },
@@ -489,7 +456,6 @@
       "date": "2017-10-28",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 25.3, "government": true },
-        {},
         { "id": "vidreisn", "votes": 6.7 },
         { "id": "samfylking", "votes": 12.1 },
         { "id": "dogun", "votes": 0.1, "elected": false },
@@ -509,7 +475,6 @@
         { "id": "frjalydfl", "votes": 0.4, "elected": false },
         { "id": "vidreisn", "votes": 8.3 },
         { "id": "samfylking", "votes": 9.9 },
-        {},
         { "id": "flfolksins", "votes": 8.9 },
         { "id": "midflokkur", "votes": 5.5 },
         { "id": "piratar", "votes": 8.6 },
@@ -526,7 +491,6 @@
         { "id": "lydraedisfl", "votes": 1, "elected": false },
         { "id": "vidreisn", "votes": 15.8, "government": true },
         { "id": "samfylking", "votes": 20.8, "government": true },
-        {},
         { "id": "midflokkur", "votes": 12.1 },
         { "id": "flfolksins", "votes": 13.8, "government": true },
         { "id": "piratar", "votes": 3, "elected": false },

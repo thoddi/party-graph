@@ -4,7 +4,6 @@
       "date": "1930-01",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 53.5 },
-        {},
         { "id": "framsokn", "votes": 12 },
         { "id": "althyduflokkurinn", "votes": 35.3 }
       ]
@@ -138,7 +137,6 @@
       "date": "1986-05-31",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 52.7, "government": true },
-        {},
         { "id": "framsokn", "votes": 7 },
         { "id": "althyduflokkurinn", "votes": 10 },
         { "id": "bandalag", "votes": 20.3 },
@@ -150,8 +148,6 @@
       "date": "1990-05",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 60.4, "government": true },
-        {},
-        {},
         { "id": "framsokn", "votes": 8.2, "government": true },
         { "id": "vettvangur", "votes": 14.8 },
         { "id": "bandalag", "votes": 8.5 },
@@ -164,10 +160,6 @@
       "date": "1994-05-28",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 40.7 },
-        {},
-        {},
-        {},
-        {},
         { "id": "rvk", "votes": 53, "government": true }
       ]
     },
@@ -175,11 +167,6 @@
       "date": "1998-05-23",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 45.2 },
-        {},
-        {},
-        {},
-        {},
-        {},
         { "id": "rvk", "votes": 53.6, "government": true },
         { "id": "mannsins", "votes": 0.6, "elected": false },
         { "id": "laun", "votes": 0.6, "elected": false }
@@ -190,11 +177,6 @@
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 40.3 },
         { "id": "frjalslyndi", "votes": 6 },
-        {},
-        {},
-        {},
-        {},
-        {},
         { "id": "rvk", "votes": 52.6, "government": true },
         { "id": "mannsins", "votes": 0.2, "elected": false },
         { "id": "hofsam", "votes": 0.6, "elected": false },
@@ -206,10 +188,6 @@
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 42.1 },
         { "id": "frjalslyndi", "votes": 9.9 },
-        {},
-        {},
-        {},
-        {},
         { "id": "framsokn", "votes": 6.1 },
         { "id": "samfylking", "votes": 26.9 },
         { "id": "vg", "votes": 13.2 }
@@ -221,12 +199,9 @@
         { "id": "sjalfstaedisflokkur", "votes": 33.6 },
         { "id": "frjalslyndi", "votes": 0.5, "elected": false },
         { "id": "fha", "votes": 1.1, "elected": false},
-        {},
-        {},
         { "id": "framsokn", "votes": 2.7, "elected": false },
         { "id": "besti", "votes": 34.7, "government": true },
         { "id": "samfylking", "votes": 19.1, "government": true },
-        {},
         { "id": "vg", "votes": 7.2 },
         { "id": "rvkfr", "votes": 1.1, "elected": false }
       ]
@@ -234,11 +209,8 @@
     {
       "date": "2014-05-31",
       "parties": [
-        {},
         { "id": "sjalfstaedisflokkur", "votes": 25.7 },
         { "id": "dogun", "votes": 1.4, "elected": false },
-        {},
-        {},
         { "id": "framsokn", "votes": 10.7 },
         { "id": "bf", "votes": 15.6, "government": true },
         { "id": "piratar", "votes": 5.9, "government": true },
@@ -273,11 +245,9 @@
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 24.5 },
         { "id": "vidreisn", "votes": 5.2, "government": true},
-        {},
         { "id": "flfolksins", "votes": 4.5 },
         { "id": "midflokkur", "votes": 2.3, "elected": false },
         { "id": "framsokn", "votes": 18.7 },
-        {},
         { "id": "piratar", "votes": 11.6, "government": true },
         { "id": "samfylking", "votes": 20.3, "government": true },
         { "id": "vg", "votes": 4 },
@@ -291,11 +261,9 @@
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 32.9 },
         { "id": "vidreisn", "votes": 10.7 },
-        {},
         { "id": "flfolksins", "votes": 3.3, "elected": false },
         { "id": "midflokkur", "votes": 11.4 },
         { "id": "framsokn", "votes": 6.9 },
-        {},
         { "id": "piratar", "votes": 1.9, "elected": false },
         { "id": "samfylking", "votes": 18.3 },
         { "id": "vinstrid", "votes": 9.5 },
