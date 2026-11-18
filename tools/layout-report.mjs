@@ -1,10 +1,12 @@
 // Measures a layout. Usage:
 //   node tools/layout-report.mjs [dir]        dir holds parties.json, data.json, borgarstjorn_data.json
 //                                            (default: the repository root)
-//   node tools/layout-report.mjs --shuffle    also checks that the automatic layout does not depend on
-//                                            the order of the parties inside an election
+//   node tools/layout-report.mjs --auto       ignore layout.json and measure a fresh automatic layout
+//   node tools/layout-report.mjs --shuffle    with --auto: also check that the automatic layout does not
+//                                            depend on the order of the parties inside an election
 // A data file that still has `{}` spacers is measured as drawn by hand (row = index in the file);
-// otherwise it is measured with services/layout.js.
+// otherwise it is measured as the page draws it: with the rows in layout.json (when there are
+// any), the rest placed by services/layout.js.
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,8 +17,10 @@ import { layoutGraph } from '../src/services/layout.js';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const shuffle = args.includes('--shuffle');
+const auto = args.includes('--auto') || shuffle;
 const dir = args.find(a => !a.startsWith('--')) ?? root;
 const read = f => JSON.parse(readFileSync(join(dir, f), 'utf8'));
+const saved = (() => { try { return JSON.parse(readFileSync(join(dir, 'layout.json'), 'utf8')); } catch { return {}; } })();
 const partiesById = Object.fromEntries(read('parties.json').map(p => [p.id, p]));
 
 function seeded(seed) { let s = seed; return () => (s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296; }
@@ -120,8 +124,8 @@ for (const [tab, file] of [['althingi', 'data.json'], ['borgarstjorn', 'borgarst
     measure(`${tab} (hand)`, data, graph, rowOf, () => undefined, Math.max(...data.elections.map(e => e.parties.length)));
     continue;
   }
-  const layout = layoutGraph(data, graph);
-  measure(`${tab} (auto)`, data, graph, (col, id) => layout.rows[col][id] ?? null, i => layout.edgePaths[i].length ? layout.edgePaths[i] : undefined, layout.rowCount);
+  const layout = layoutGraph(data, graph, auto ? {} : { pinned: saved[tab] });
+  measure(`${tab} (${auto || !saved[tab] ? 'auto' : 'saved'})`, data, graph, (col, id) => layout.rows[col][id] ?? null, i => layout.edgePaths[i].length ? layout.edgePaths[i] : undefined, layout.rowCount);
   if (shuffle) {
     for (const seed of [1, 2, 3]) {
       const d2 = normalizeElections(shuffled(read(file), seed));

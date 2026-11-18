@@ -4,6 +4,13 @@
  * Input is the graph model (see graph-model.js); the order of parties inside an election
  * in the data file does not matter. The result is the same for any order of the input.
  *
+ * ## Semi-automatic
+ *
+ * The cards can be pinned to rows saved in layout.json (`options.pinned`, see
+ * tools/layout.mjs). A pinned card never moves; the search only places what is missing:
+ * new parties and elections, and the rows that long lines pass through, taking the pinned
+ * cards as given. Without any pinned rows it places everything.
+ *
  * ## How
  *
  * A line that skips columns gets a placeholder ("dummy") in every column it passes, so
@@ -321,16 +328,20 @@ function optimise(columns, links, gaps, height, options = {}) {
     return rows;
   });
   if (options.start) placeStart(columns, occ, options.start, height);
+  if (options.pinned) placePinned(columns, occ, options.pinned, height);
+  const free = items.filter(item => !item.fixed);
   const columnCards = columns.map(col => col.filter(item => !item.dummy));
-  const move = (run, row) => moveRun(run, row, occ, gaps, columnCards);
+  // a run or a move may not touch a pinned card, nor swap places with one
+  const movable = (run, row) => run.every(item => !item.fixed && !occ[item.col][row]?.fixed);
+  const move = (run, row) => movable(run, row) ? moveRun(run, row, occ, gaps, columnCards) : Infinity;
 
   const rnd = seeded(options.seed ?? 1);
   const T0 = options.tStart ?? T_START, T1 = options.tEnd ?? T_END;
-  const steps = options.anneal === false ? 0 : (options.iterations ?? ITERATIONS) * items.length;
+  const steps = options.anneal === false || !free.length ? 0 : (options.iterations ?? ITERATIONS) * free.length;
   const cool = Math.pow(T1 / T0, 1 / Math.max(1, steps));
   let t = T0;
   for (let s = 0; s < steps; s++, t *= cool) {
-    const item = items[Math.floor(rnd() * items.length)];
+    const item = free[Math.floor(rnd() * free.length)];
     let run = [item];
     if (rnd() < RUN_MOVES) {
       // the whole level run, or a random piece of it that contains the item
@@ -347,6 +358,7 @@ function optimise(columns, links, gaps, height, options = {}) {
     if (row < 0 || row >= height || row === item.row) continue;
     const from = item.row;
     const delta = move(run, row);
+    if (delta === Infinity) continue;
     if (delta > 0 && rnd() >= Math.exp(-delta / t)) move(run, from);   // undo
   }
 
@@ -354,21 +366,24 @@ function optimise(columns, links, gaps, height, options = {}) {
   let improved = options.improve !== false;
   for (let pass = 0; improved && pass < 50; pass++) {
     improved = false;
-    for (const item of items) {
+    for (const item of free) {
       for (const whole of [false, true]) {
         const run = whole ? levelRun(item) : [item];
         if (whole && run.length === 1) continue;
         for (let row = 0; row < height; row++) {
           if (row === item.row) continue;
           const from = item.row;
-          if (move(run, row) < -1e-9) improved = true;
+          const delta = move(run, row);
+          if (delta === Infinity) continue;
+          if (delta < -1e-9) improved = true;
           else move(run, from);
         }
       }
     }
   }
 
-  // drop rows that are empty in every column
+  // drop rows that are empty in every column (never with pinned rows: they must stay where they are)
+  if (options.pinned) return Math.max(0, ...items.map(item => item.row)) + 1;
   const used = new Array(height).fill(false);
   for (const item of items) used[item.row] = true;
   const shift = [];
@@ -379,35 +394,28 @@ function optimise(columns, links, gaps, height, options = {}) {
 }
 
 /**
- * Turns a layout saved by tools/layout.mjs back into what layoutGraph() returns, or null
- * when it no longer matches the data.
+ * Put every card that has a row in `pinned` (`pinned[col][cardId]`) on that row and mark it
+ * fixed. Everything else (new cards, and the placeholders of long lines) goes to the free
+ * row nearest the average row of its neighbours that are already placed; the search then
+ * only moves these.
  */
-export function savedLayout(saved, data, graph) {
-  if (!saved || saved.fingerprint !== layoutFingerprint(data, graph)) return null;
-  const colOf = new Map(data.elections.map((e, i) => [e.key, i]));
-  return {
-    rows: data.elections.map(e => saved.rows[e.key] ?? {}),
-    edgePaths: graph.edges.map(e => (saved.edgePaths[`${e.fromKey}|${e.fromId}|${e.toKey}|${e.toId}`] ?? [])
-      .map(([key, row]) => ({ col: colOf.get(key), row }))),
-    rowCount: saved.rowCount,
-  };
-}
-
-/**
- * Short text that changes whenever anything the layout depends on changes: the columns,
- * their cards, the lines, the group nodes and the weights in COST. A saved layout
- * (layout.json, written by tools/layout.mjs) is only used when its fingerprint matches.
- */
-export function layoutFingerprint(data, graph) {
-  const input = JSON.stringify({
-    cols: data.elections.map(e => [e.key, e.parties.filter(p => p && p.id).map(p => `${p.id}:${p.votes ?? ''}`).sort()]),
-    edges: graph.edges.map(e => [e.fromKey, e.fromId, e.toKey, e.toId, e.kind, !!e.explicit]).map(String).sort(),
-    nodes: graph.nodes.map(n => [n.id, n.prevKey, n.nextKey, n.sources.map(x => x.id + x.kind), n.targets.map(x => x.id + x.kind)]).map(String).sort(),
-    cost: COST,
-  });
-  let h = 0x811c9dc5;                                 // FNV-1a
-  for (let i = 0; i < input.length; i++) { h ^= input.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
-  return h.toString(16).padStart(8, '0');
+function placePinned(columns, occ, pinned, height) {
+  for (const rows of occ) rows.fill(null);
+  const placed = new Set();
+  columns.forEach((col, c) => col.forEach(item => {
+    const row = item.dummy ? undefined : pinned[c]?.[item.card];
+    if (Number.isInteger(row) && row >= 0 && row < height && !occ[c][row]) {
+      item.row = row; item.fixed = true; occ[c][row] = item; placed.add(item);
+    }
+  }));
+  columns.forEach((col, c) => col.forEach((item, i) => {
+    if (item.fixed) return;
+    const near = item.links.map(l => (l.a === item ? l.b : l.a)).filter(o => placed.has(o));
+    const want = near.length ? near.reduce((sum, o) => sum + o.row, 0) / near.length : i;
+    let best = -1;
+    for (let r = 0; r < height; r++) if (!occ[c][r] && (best < 0 || Math.abs(r - want) < Math.abs(best - want))) best = r;
+    item.row = best; occ[c][best] = item; placed.add(item);
+  }));
 }
 
 /**
@@ -438,7 +446,8 @@ function placeStart(columns, occ, start, height) {
 /**
  * @param {{elections: object[]}} data  normalised election data for one tab
  * @param {object} graph                from buildGraph()
- * @param {object} [options]            seeds: number of searches to run (best wins); start: card rows
+ * @param {object} [options]            pinned: saved rows `{ [electionKey]: { [partyId]: row } }`, kept as they are;
+ *                                      seeds: number of searches to run (best wins); start: card rows
  *                                      to start from; anneal / improve: false to skip a stage
  */
 export function layoutGraph(data, graph, options = {}) {
@@ -455,8 +464,12 @@ export function layoutGraph(data, graph, options = {}) {
 function layoutOnce(data, graph, options) {
   const { columns, links, gaps, byId, pathTags } = prepare(data, graph);
   const maxCount = Math.max(0, ...columns.map(c => c.length));
-  const height = Math.max(MIN_ROWS, maxCount + SPARE_ROWS);
-  const rowCount = optimise(columns, links, gaps, height, options);
+  let height = Math.max(MIN_ROWS, maxCount + SPARE_ROWS);
+  const pinned = options.pinned ? data.elections.map(e => options.pinned[e.key] ?? {}) : null;
+  if (pinned) {
+    for (const col of pinned) for (const row of Object.values(col)) if (Number.isInteger(row)) height = Math.max(height, row + 1 + SPARE_ROWS);
+  }
+  const rowCount = optimise(columns, links, gaps, height, { ...options, pinned });
 
   const rows = data.elections.map(() => ({}));
   for (const item of byId.values()) if (!item.dummy) rows[item.col][item.card] = item.row;
@@ -472,5 +485,33 @@ function layoutOnce(data, graph, options) {
   });
 
   const { cost, crossings, parts } = totalCost([...byId.values()], links, gaps);
-  return { rows, edgePaths, rowCount, crossings, cost, parts };
+  return { rows, edgePaths, rowCount, crossings, cost, parts, report: pinned ? pinReport(data, byId, options.pinned) : null };
+}
+
+/**
+ * What did not fit the saved rows: cards with no saved row (`placed`, put there by the
+ * search), saved rows of cards that are not in the data any more (`stale`), and two cards
+ * saved on the same row (`clashes`; the second was treated as new).
+ */
+function pinReport(data, byId, pinned) {
+  const placed = [], stale = [], clashes = [];
+  data.elections.forEach((e, c) => {
+    const saved = pinned[e.key] ?? {};
+    const taken = new Map();
+    for (const party of e.parties) {
+      if (!party || !party.id) continue;
+      const row = saved[party.id];
+      const item = byId.get(`c|${e.key}|${party.id}`);
+      if (!Number.isInteger(row)) { placed.push({ key: e.key, id: party.id }); continue; }
+      if (item && item.row !== row) clashes.push({ key: e.key, id: party.id, row, with: taken.get(row) });
+      else taken.set(row, party.id);
+    }
+    for (const id of Object.keys(saved)) {
+      if (!e.parties.some(p => p && p.id === id)) stale.push({ key: e.key, id });
+    }
+  });
+  for (const key of Object.keys(pinned)) {
+    if (!data.elections.some(e => e.key === key)) stale.push({ key, id: '*' });
+  }
+  return { placed, stale, clashes };
 }

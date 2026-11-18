@@ -1,7 +1,7 @@
 import PartyData from '../services/party-data.js';
 import { normalizeElections } from '../services/election-data.js';
 import { buildGraph } from '../services/graph-model.js';
-import { layoutGraph, savedLayout } from '../services/layout.js';
+import { layoutGraph } from '../services/layout.js';
 import { DATASETS } from '../services/datasets.js';
 import './election-column.js';
 import './connection-layer.js';
@@ -106,7 +106,7 @@ class ElectionGraph extends HTMLElement {
     return resp.json();
   }
 
-  /** layout.json, written by tools/layout.mjs; missing or broken is fine. */
+  /** layout.json, the saved rows (see tools/layout.mjs); missing or broken is fine. */
   async _loadSavedLayouts() {
     try {
       const resp = await fetch('layout.json');
@@ -155,18 +155,20 @@ class ElectionGraph extends HTMLElement {
   }
 
   /**
-   * Where the cards go in the current tab: the saved layout from layout.json while it still
-   * matches the data, otherwise worked out here (a quicker search). Kept once known.
+   * Where the cards go in the current tab. Every card that has a row in layout.json stays
+   * there; what is missing (new parties or elections, and the rows long lines pass through)
+   * is placed by the search in services/layout.js. Kept once known.
    */
   get _layout() {
     const type = this._currentType;
     if (!this._layouts[type]) {
-      const data = this._electionData[type], graph = this._graphs[type];
-      this._layouts[type] = savedLayout(this._savedLayouts?.[type], data, graph);
-      if (!this._layouts[type]) {
-        console.info(`${type}: layout.json is missing or out of date; run node tools/layout.mjs`);
-        this._layouts[type] = layoutGraph(data, graph);
-      }
+      const saved = this._savedLayouts?.[type];
+      const layout = layoutGraph(this._electionData[type], this._graphs[type], { pinned: saved });
+      if (!saved) console.info(`${type}: no saved layout; run node tools/layout.mjs --redo`);
+      const report = layout.report;
+      if (report?.placed.length) console.info(`${type}: ${report.placed.length} cards have no saved row (run node tools/layout.mjs to save them)`);
+      if (report?.clashes.length) console.warn(`${type}: two cards saved on the same row: ${report.clashes.map(c => `${c.id} (${c.key})`).join(', ')}`);
+      this._layouts[type] = layout;
     }
     return this._layouts[type];
   }
