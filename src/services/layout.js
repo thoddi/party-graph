@@ -4,18 +4,30 @@
  * Input is the graph model (see graph-model.js); the order of parties inside an election
  * in the data file does not matter. The result is the same for any order of the input.
  *
- * ## Stages
+ * ## How
  *
- *   1. Prepare. A line that skips columns gets a placeholder ("dummy") in every column it
- *      passes, so that it gets a row of its own instead of crossing a card. A group node
- *      counts as a link from each of its sources to each of its targets.
- *   2. Order. Cards start sorted by vote share (then id). Then the columns are swept
- *      back and forth, each one sorted by the average position of the items it is linked
- *      to in the neighbouring column (barycenter). Adjacent items are swapped when that
- *      removes crossings. The order with the fewest crossings wins.
- *   3. Rows. The order inside a column stays fixed, but there may be empty rows between
- *      items, so a party that continues keeps its line level. Links of a continuing
- *      party count more than a succession, and a succession more than a defection.
+ * A line that skips columns gets a placeholder ("dummy") in every column it passes, so
+ * it has a row of its own and never runs through a card. A group node counts as a line
+ * from each of its sources to each of its targets.
+ *
+ * Every card and placeholder then gets a row, chosen to make this score as small as
+ * possible (see COST):
+ *
+ *   length     every line costs its vertical distance in rows (plus a little extra for
+ *              long jumps), so lines stay short and a continuing party stays level
+ *   crossings  every pair of lines that cross
+ *   rank       a card above the card of a bigger party in the same column (bigger by
+ *              total votes in the tab), so the big parties keep a fixed order at the top
+ *              (Sjálfstæðisflokkurinn, Framsókn, Alþýðuflokkurinn). A party succeeded by
+ *              a bigger one takes its rank, so Íhaldsflokkurinn sits where
+ *              Sjálfstæðisflokkurinn will be. Big parties are also pulled up a little.
+ *   compact    every card and placeholder is pulled up a little, so there are no
+ *              needless gaps
+ *
+ * The search starts with each column sorted by rank, then moves single cards, or a
+ * party's whole level run, to other rows (swapping with what is there) by simulated
+ * annealing with a fixed random seed, and ends with plain improvement passes until
+ * nothing helps. Weights are in COST; tools/layout-report.mjs measures the result.
  *
  * ## Result
  *
@@ -23,7 +35,8 @@
  *     rows:      [{ [cardId]: row }]   one object per election column
  *     edgePaths: [[{ col, row }]]      per graph.edges entry: the placeholders it passes
  *     rowCount:  number                height of the tallest column in rows
- *     crossings: number                line crossings in the chosen order
+ *     crossings: number                line crossings
+ *     cost:      number                the score above
  *   }
  */
 
@@ -31,62 +44,103 @@ export const CARD_SIZE = 120;
 export const ROW_GAP = 18;
 export const ROW_PITCH = CARD_SIZE + ROW_GAP;
 
+export const COST = {
+  length: { continuation: 1, succession: 1, defection: 0.6 },  // per row of vertical distance
+  longJump: 0.15,     // times the distance squared, on top of the above
+  crossing: 8,
+  rank: 8,            // when a card sits above a bigger party's card in the same column: times
+                      // (big rank - small rank) / sqrt(big rank), so a tiny party above a mid-sized
+                      // one costs nearly as much as one big party above another
+  top: 0.3,           // per row, times the party's relative total vote share: big parties stay high
+  compact: 0.3,       // per row
+  rankPower: 1,       // rank = (total vote share relative to the biggest party) ^ rankPower
+};
+
 const MIN_ROWS = 16;      // a column may always use this many rows
-const SWEEPS = 24;        // most barycenter passes per start (a pass is one sweep down and one up)
-const RESTARTS = 400;      // starting orders tried; the first is the canonical one
-const ROW_PASSES = 30;
+const SPARE_ROWS = 2;     // rows the search may use beyond the fullest column
+const RUN_MOVES = 0.5;   // share of moves that move a level run instead of one item
+const ITERATIONS = 600;   // annealing moves per item
+const T_START = 15;
+const T_END = 0.02;
 
-const WEIGHT = { continuation: 3, succession: 2, defection: 1 };
-
-/** Weight of a link: a party continuing counts most. */
-function weightOf(edge) {
-  if (!edge.explicit) return WEIGHT.continuation;
-  return edge.kind === 'defection' ? WEIGHT.defection : WEIGHT.succession;
+/** Small deterministic random numbers, so the same data always gives the same layout. */
+function seeded(seed) {
+  let s = seed;
+  return () => (s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296;
 }
 
-/**
- * Items are the things that take a row: cards ("c|key|id") and placeholders ("d|edge|col").
- * Returns the items of each column, and the links between items in adjacent columns.
- */
+function lengthWeight(edge) {
+  if (!edge.explicit) return COST.length.continuation;
+  return edge.kind === 'defection' ? COST.length.defection : COST.length.succession;
+}
+
+/** Cards ("c|key|id") and placeholders ("d|tag|col"), and the links between adjacent columns. */
 function prepare(data, graph) {
   const elections = data.elections;
-  const colOf = new Map(elections.map((e, i) => [e.key, i]));
-  const columns = elections.map(() => []);                 // items per column
+  const columns = elections.map(() => []);
   const byId = new Map();
-  const links = [];                                        // { a, b, w } with col(a) + 1 === col(b)
-  const edgePaths = graph.edges.map(() => []);
+  const links = [];                                    // { a, b, w } with a.col + 1 === b.col
 
   const addItem = (col, id, extra) => {
     if (byId.has(id)) return byId.get(id);
-    const item = { id, col, ...extra };
+    const item = { id, col, row: 0, links: [], ...extra };
     byId.set(id, item);
     columns[col].push(item);
     return item;
   };
   const cardId = (key, id) => `c|${key}|${id}`;
 
+  // rank: each party's total vote share in this tab, relative to the biggest
+  const total = new Map();
+  for (const e of elections) for (const p of e.parties) {
+    if (p && p.id) total.set(p.id, (total.get(p.id) ?? 0) + (p.votes ?? 0));
+  }
+  const maxTotal = Math.max(1, ...total.values());
+  const rankOf = new Map([...total].map(([id, v]) => [id, Math.pow(v / maxTotal, COST.rankPower)]));
+
   elections.forEach((election, col) => {
     for (const party of election.parties) {
-      if (party && party.id) addItem(col, cardId(election.key, party.id), { card: party.id, votes: party.votes ?? 0 });
+      if (party && party.id) {
+        addItem(col, cardId(election.key, party.id), { card: party.id, rank: 0 });
+      }
     }
   });
 
-  const chain = (fromItem, toItem, weight, tag) => {
-    let prev = fromItem;
-    for (let col = fromItem.col + 1; col < toItem.col; col++) {
-      const dummy = addItem(col, `d|${tag}|${col}`, { dummy: true, tag });
-      links.push({ a: prev, b: dummy, w: weight });
+  const link = (a, b, w) => {
+    const l = { a, b, w, n: links.length };
+    links.push(l);
+    a.links.push(l);
+    b.links.push(l);
+  };
+  const chain = (from, to, w, tag) => {
+    let prev = from;
+    for (let col = from.col + 1; col < to.col; col++) {
+      const dummy = addItem(col, `d|${tag}|${col}`, { dummy: true, rank: 0, card: null });
+      link(prev, dummy, w);
       prev = dummy;
     }
-    links.push({ a: prev, b: toItem, w: weight });
+    link(prev, to, w);
   };
 
-  graph.edges.forEach((edge, i) => {
+  // a party that was succeeded by a bigger one takes its rank (Íhaldsflokkurinn sits in
+  // Sjálfstæðisflokkurinn's place); only formal successions count, not defections
+  const successors = graph.edges.filter(e => e.explicit && e.kind === 'succession' && e.fromId !== e.toId);
+  for (let changed = true; changed;) {
+    changed = false;
+    for (const e of successors) {
+      const r = rankOf.get(e.toId) ?? 0;
+      if (r > (rankOf.get(e.fromId) ?? 0)) { rankOf.set(e.fromId, r); changed = true; }
+    }
+  }
+  for (const item of byId.values()) item.rank = rankOf.get(item.card) ?? 0;
+
+  const pathTags = graph.edges.map(edge => {
     const from = byId.get(cardId(edge.fromKey, edge.fromId));
     const to = byId.get(cardId(edge.toKey, edge.toId));
-    if (!from || !to || from.col >= to.col) return;
-    chain(from, to, weightOf(edge), `e${edge.fromKey}>${edge.toKey}|${edge.fromId}>${edge.toId}`);
-    edge.pathTag = `e${edge.fromKey}>${edge.toKey}|${edge.fromId}>${edge.toId}`;
+    if (!from || !to || from.col >= to.col) return null;
+    const tag = `e${edge.fromKey}>${edge.toKey}|${edge.fromId}>${edge.toId}`;
+    chain(from, to, lengthWeight(edge), tag);
+    return tag;
   });
 
   graph.nodes.forEach(node => {
@@ -95,219 +149,236 @@ function prepare(data, graph) {
         const from = byId.get(cardId(s.key, s.id));
         const to = byId.get(cardId(t.key, t.id));
         if (!from || !to || from.col >= to.col) continue;
-        const w = (s.kind === 'defection' || t.kind === 'defection') ? WEIGHT.defection : WEIGHT.succession;
+        const w = (s.kind === 'defection' || t.kind === 'defection') ? COST.length.defection : COST.length.succession;
         chain(from, to, w, `n${node.id}|${s.id}>${t.id}`);
       }
     }
   });
 
-  return { columns, links, byId, colOf, edgePaths, elections };
+  // canonical order of items, independent of the order in the data files
+  for (const col of columns) col.sort((a, b) => (b.rank - a.rank) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  const gaps = elections.map(() => []);                 // links leaving each column
+  for (const l of links) gaps[l.a.col].push(l);
+
+  return { columns, links, gaps, byId, pathTags };
 }
 
-/** Crossings between links of every pair of adjacent columns, given the position of each item. */
-function countCrossings(links, pos) {
-  let total = 0;
-  const byCol = new Map();
-  for (const l of links) {
-    const c = l.a.col;
-    if (!byCol.has(c)) byCol.set(c, []);
-    byCol.get(c).push(l);
-  }
-  for (const list of byCol.values()) total += crossingsBetween(list, pos);
-  return total;
-}
+const linkLength = l => {
+  const d = Math.abs(l.a.row - l.b.row);
+  return l.w * (d + COST.longJump * d * d);
+};
+const itemCost = item => (COST.compact + COST.top * item.rank) * item.row;
+/** Rank penalty between two cards of one column: the smaller one should be below. */
+const rankCost = (x, y) => {
+  if (x.rank === y.rank) return 0;
+  const [big, small] = x.rank > y.rank ? [x, y] : [y, x];
+  return big.row > small.row ? COST.rank * (big.rank - small.rank) / Math.sqrt(big.rank) : 0;
+};
+const crosses = (l, m) => (l.a.row - m.a.row) * (l.b.row - m.b.row) < 0;
 
-function crossingsBetween(list, pos) {
-  let n = 0;
-  for (let i = 0; i < list.length; i++) {
-    const pa = pos.get(list[i].a), pb = pos.get(list[i].b);
-    for (let j = i + 1; j < list.length; j++) {
-      const qa = pos.get(list[j].a), qb = pos.get(list[j].b);
-      if ((pa - qa) * (pb - qb) < 0) n++;
+/** Score of everything that involves the given items (each line, crossing and rank pair counted once). */
+function localCost(items, gaps, columnCards) {
+  let cost = 0;
+  const set = new Set(items);
+  const mine = new Set();
+  for (const item of items) {
+    cost += itemCost(item);
+    for (const l of item.links) mine.add(l);
+    if (item.dummy) continue;
+    for (const other of columnCards[item.col]) {
+      if (other === item || (set.has(other) && other.id < item.id)) continue;
+      cost += rankCost(item, other);
     }
   }
-  return n;
+  for (const l of mine) {
+    cost += linkLength(l);
+    for (const m of gaps[l.a.col]) {
+      if (m === l || (mine.has(m) && m.n < l.n)) continue;
+      if (crosses(l, m)) cost += COST.crossing;
+    }
+  }
+  return cost;
 }
 
-function positions(columns) {
-  const pos = new Map();
-  columns.forEach(col => col.forEach((item, i) => pos.set(item, i)));
-  return pos;
+function totalCost(items, links, gaps) {
+  let cost = 0, crossings = 0;
+  const parts = { length: 0, crossing: 0, rank: 0, compact: 0 };
+  for (const item of items) {
+    cost += itemCost(item);
+    parts.rank += COST.top * item.rank * item.row;
+    parts.compact += COST.compact * item.row;
+  }
+  const byCol = new Map();
+  for (const item of items) if (!item.dummy) { if (!byCol.has(item.col)) byCol.set(item.col, []); byCol.get(item.col).push(item); }
+  for (const col of byCol.values()) {
+    for (let i = 0; i < col.length; i++) for (let j = i + 1; j < col.length; j++) {
+      const r = rankCost(col[i], col[j]);
+      cost += r; parts.rank += r;
+    }
+  }
+  for (const l of links) { cost += linkLength(l); parts.length += linkLength(l); }
+  for (const list of gaps) {
+    for (let i = 0; i < list.length; i++) {
+      for (let j = i + 1; j < list.length; j++) if (crosses(list[i], list[j])) crossings++;
+    }
+  }
+  parts.crossing = crossings * COST.crossing;
+  return { cost: cost + crossings * COST.crossing, crossings, parts };
 }
 
-function compareItems(a, b) {
-  if (a.dummy !== b.dummy) return a.dummy ? 1 : -1;            // cards first
-  if (!a.dummy && a.votes !== b.votes) return b.votes - a.votes;
-  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+/**
+ * The level run through `item`: the items joined to it, column after column, by
+ * horizontal lines. Moving a whole run keeps a party's lane straight.
+ */
+function levelRun(item) {
+  const run = [item];
+  for (let cur = item; ;) {
+    const l = cur.links.find(l => l.b === cur && l.a.row === cur.row);
+    if (!l) break;
+    run.unshift(l.a); cur = l.a;
+  }
+  for (let cur = item; ;) {
+    const l = cur.links.find(l => l.a === cur && l.b.row === cur.row);
+    if (!l) break;
+    run.push(l.b); cur = l.b;
+  }
+  return run;
 }
 
-function initialOrder(columns) {
-  return columns.map(col => [...col].sort(compareItems));
+/**
+ * Move every item of `run` (all on one row, each in its own column) to `row`, swapping
+ * with whatever is there. Moving back to the old row undoes it. Returns the change in score.
+ */
+function moveRun(run, row, occ, gaps, columnCards) {
+  const affected = [...run];
+  for (const item of run) { const o = occ[item.col][row]; if (o) affected.push(o); }
+  const before = localCost(affected, gaps, columnCards);
+  for (const item of run) {
+    const col = occ[item.col];
+    const from = item.row;
+    const other = col[row];
+    col[from] = other ?? null;
+    if (other) other.row = from;
+    col[row] = item;
+    item.row = row;
+  }
+  return localCost(affected, gaps, columnCards) - before;
 }
 
-/** Sort one column by the average position of its neighbours in column `from`. Keeps `pos` up to date. */
-function sortByNeighbours(order, col, from, neighbours, pos) {
-  const keyed = order[col].map((item, i) => {
-    const ns = neighbours.get(item)?.filter(n => n.col === from) ?? [];
-    const key = ns.length ? ns.reduce((s, n) => s + pos.get(n), 0) / ns.length : i;
-    return { item, key, i };
+function optimise(columns, links, gaps, height, options = {}) {
+  const items = columns.flat();
+  const occ = columns.map(col => {
+    const rows = new Array(height).fill(null);
+    col.forEach((item, i) => { item.row = i; rows[i] = item; });
+    return rows;
   });
-  keyed.sort((a, b) => a.key - b.key || a.i - b.i);
-  order[col] = keyed.map(k => k.item);
-  order[col].forEach((item, i) => pos.set(item, i));
-}
+  if (options.start) placeStart(columns, occ, options.start, height);
+  const columnCards = columns.map(col => col.filter(item => !item.dummy));
+  const move = (run, row) => moveRun(run, row, occ, gaps, columnCards);
 
-/** Swap adjacent items while that reduces crossings. `pos` is kept up to date. */
-function transpose(order, incident, pos) {
-  let improved = true;
-  let rounds = 0;
-  while (improved && rounds++ < 20) {
+  const rnd = seeded(options.seed ?? 1);
+  const T0 = options.tStart ?? T_START, T1 = options.tEnd ?? T_END;
+  const steps = options.anneal === false ? 0 : (options.iterations ?? ITERATIONS) * items.length;
+  const cool = Math.pow(T1 / T0, 1 / Math.max(1, steps));
+  let t = T0;
+  for (let s = 0; s < steps; s++, t *= cool) {
+    const item = items[Math.floor(rnd() * items.length)];
+    let run = [item];
+    if (rnd() < RUN_MOVES) {
+      // the whole level run, or a random piece of it that contains the item
+      run = levelRun(item);
+      if (run.length > 1 && rnd() < 0.5) {
+        const i = run.indexOf(item);
+        run = run.slice(Math.floor(rnd() * (i + 1)), i + 1 + Math.floor(rnd() * (run.length - i)));
+      }
+    }
+    // mostly small moves; sometimes anywhere in the column
+    const row = rnd() < 0.7
+      ? item.row + (rnd() < 0.5 ? -1 : 1) * (1 + Math.floor(rnd() * 3))
+      : Math.floor(rnd() * height);
+    if (row < 0 || row >= height || row === item.row) continue;
+    const from = item.row;
+    const delta = move(run, row);
+    if (delta > 0 && rnd() >= Math.exp(-delta / t)) move(run, from);   // undo
+  }
+
+  // improvement passes: try every row for every item and its level run, keep what helps
+  let improved = options.improve !== false;
+  for (let pass = 0; improved && pass < 50; pass++) {
     improved = false;
-    for (let col = 0; col < order.length; col++) {
-      for (let i = 0; i + 1 < order[col].length; i++) {
-        const a = order[col][i], b = order[col][i + 1];
-        // only links of the two swapped items can change status
-        const touching = [...(incident.get(a) ?? []), ...(incident.get(b) ?? [])];
-        if (!touching.length) continue;
-        const before = crossingsBetween(touching, pos);
-        pos.set(a, i + 1); pos.set(b, i);
-        if (crossingsBetween(touching, pos) < before) {
-          order[col][i] = b; order[col][i + 1] = a;
-          improved = true;
-        } else {
-          pos.set(a, i); pos.set(b, i + 1);
+    for (const item of items) {
+      for (const whole of [false, true]) {
+        const run = whole ? levelRun(item) : [item];
+        if (whole && run.length === 1) continue;
+        for (let row = 0; row < height; row++) {
+          if (row === item.row) continue;
+          const from = item.row;
+          if (move(run, row) < -1e-9) improved = true;
+          else move(run, from);
         }
       }
     }
   }
-}
 
-/** Small deterministic random numbers, so the same data always gives the same layout. */
-function seeded(seed) {
-  let s = seed;
-  return () => (s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296;
-}
-
-function orderColumns(columns, links) {
-  const up = new Map(), down = new Map();          // neighbours to the left / right
-  const add = (m, k, v) => { if (!m.has(k)) m.set(k, []); m.get(k).push(v); };
-  const incident = new Map();
-  for (const l of links) {
-    add(up, l.b, l.a);
-    add(down, l.a, l.b);
-    add(incident, l.a, l);
-    add(incident, l.b, l);
-  }
-
-  const start = initialOrder(columns);
-  let best = null;
-  let bestScore = Infinity;
-
-  for (let attempt = 0; attempt < RESTARTS; attempt++) {
-    // attempt 0 starts from the canonical order, the others from a shuffled copy of it
-    const rnd = seeded(attempt + 1);
-    const order = start.map(col => {
-      const copy = [...col];
-      if (attempt > 0) for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(rnd() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    });
-    let score = Infinity, stale = 0;
-    for (let pass = 0; pass < SWEEPS && stale < 3; pass++) {
-      const pos = positions(order);
-      for (let col = 1; col < order.length; col++) sortByNeighbours(order, col, col - 1, up, pos);
-      for (let col = order.length - 2; col >= 0; col--) sortByNeighbours(order, col, col + 1, down, pos);
-      transpose(order, incident, pos);
-      const now = countCrossings(links, pos);
-      if (now < score) { score = now; stale = 0; } else stale++;
-      if (now < bestScore) { bestScore = now; best = order.map(c => [...c]); }
-    }
-  }
-  return { order: best, crossings: bestScore };
+  // drop rows that are empty in every column
+  const used = new Array(height).fill(false);
+  for (const item of items) used[item.row] = true;
+  const shift = [];
+  let next = 0;
+  for (let r = 0; r < height; r++) { shift[r] = next; if (used[r]) next++; }
+  for (const item of items) item.row = shift[item.row];
+  return next;
 }
 
 /**
- * Gives every item a row. Items keep their order; rows may skip numbers. Each item is
- * pulled towards the weighted average row of the items it is linked to, then the rows
- * are made strictly increasing again (pool-adjacent-violators on `row - index`).
+ * Start from given card rows (`start[col][cardId]`, e.g. a hand-made layout). Placeholders
+ * go to the free row nearest the straight line between the cards they connect.
  */
-function assignRows(order, links, cap) {
-  const nbrs = new Map();
-  for (const l of links) {
-    for (const [x, y] of [[l.a, l.b], [l.b, l.a]]) {
-      if (!nbrs.has(x)) nbrs.set(x, []);
-      nbrs.get(x).push({ item: y, w: l.w });
-    }
-  }
-  const row = new Map();
-  order.forEach(col => col.forEach((item, i) => row.set(item, i)));
-
-  const settle = col => {
-    const items = order[col];
-    const n = items.length;
-    if (!n) return;
-    const want = items.map((item, i) => {
-      const ns = nbrs.get(item);
-      if (!ns) return row.get(item) - i;
-      let sw = 0, s = 0;
-      for (const { item: o, w } of ns) { sw += w; s += w * row.get(o); }
-      return s / sw - i;
-    });
-    // isotonic regression: want' non-decreasing
-    const blocks = [];
-    want.forEach(v => {
-      blocks.push({ sum: v, n: 1 });
-      while (blocks.length > 1) {
-        const b = blocks[blocks.length - 1], a = blocks[blocks.length - 2];
-        if (a.sum / a.n <= b.sum / b.n) break;
-        blocks.pop(); a.sum += b.sum; a.n += b.n;
-      }
-    });
-    let i = 0;
-    for (const b of blocks) {
-      const e = Math.min(Math.max(Math.round(b.sum / b.n), 0), cap - n);
-      for (let k = 0; k < b.n; k++, i++) row.set(items[i], i + e);
-    }
+function placeStart(columns, occ, start, height) {
+  for (const rows of occ) rows.fill(null);
+  columns.forEach((col, c) => col.forEach(item => {
+    if (!item.dummy) { item.row = start[c][item.card]; occ[c][item.row] = item; }
+  }));
+  const ends = item => {
+    let a = item, b = item;
+    while (a.dummy) a = a.links.find(l => l.b === a).a;
+    while (b.dummy) b = b.links.find(l => l.a === b).b;
+    return [a, b];
   };
-
-  for (let pass = 0; pass < ROW_PASSES; pass++) {
-    for (let col = 0; col < order.length; col++) settle(col);
-    for (let col = order.length - 1; col >= 0; col--) settle(col);
-  }
-
-  // shift everything up so the topmost row is 0
-  let min = Infinity;
-  row.forEach(r => { min = Math.min(min, r); });
-  if (min !== Infinity && min !== 0) row.forEach((r, item) => row.set(item, r - min));
-  return row;
+  columns.forEach((col, c) => col.forEach(item => {
+    if (!item.dummy) return;
+    const [a, b] = ends(item);
+    const want = a.row + (b.row - a.row) * (c - a.col) / (b.col - a.col);
+    let best = -1;
+    for (let r = 0; r < height; r++) if (!occ[c][r] && (best < 0 || Math.abs(r - want) < Math.abs(best - want))) best = r;
+    item.row = best; occ[c][best] = item;
+  }));
 }
 
 /**
  * @param {{elections: object[]}} data  normalised election data for one tab
  * @param {object} graph                from buildGraph()
+ * @param {object} [options]            start: card rows to start from; anneal / improve: false to skip a stage
  */
-export function layoutGraph(data, graph) {
-  const { columns, links, byId, edgePaths } = prepare(data, graph);
+export function layoutGraph(data, graph, options = {}) {
+  const { columns, links, gaps, byId, pathTags } = prepare(data, graph);
   const maxCount = Math.max(0, ...columns.map(c => c.length));
-  const cap = Math.max(MIN_ROWS, maxCount);
-
-  const { order, crossings } = orderColumns(columns, links);
-  const row = assignRows(order, links, cap);
+  const height = Math.max(MIN_ROWS, maxCount + SPARE_ROWS);
+  const rowCount = optimise(columns, links, gaps, height, options);
 
   const rows = data.elections.map(() => ({}));
-  for (const item of byId.values()) if (!item.dummy) rows[item.col][item.card] = row.get(item);
+  for (const item of byId.values()) if (!item.dummy) rows[item.col][item.card] = item.row;
 
-  graph.edges.forEach((edge, i) => {
-    if (!edge.pathTag) return;
+  const edgePaths = pathTags.map(tag => {
+    const path = [];
+    if (!tag) return path;
     for (let col = 0; col < data.elections.length; col++) {
-      const d = byId.get(`d|${edge.pathTag}|${col}`);
-      if (d) edgePaths[i].push({ col, row: row.get(d) });
+      const d = byId.get(`d|${tag}|${col}`);
+      if (d) path.push({ col, row: d.row });
     }
+    return path;
   });
 
-  let rowCount = 0;
-  row.forEach(r => { rowCount = Math.max(rowCount, r + 1); });
-  return { rows, edgePaths, rowCount, crossings };
+  const { cost, crossings, parts } = totalCost([...byId.values()], links, gaps);
+  return { rows, edgePaths, rowCount, crossings, cost, parts };
 }
