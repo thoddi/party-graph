@@ -52,7 +52,7 @@ template.innerHTML = `
 
 class PartyCard extends HTMLElement {
   static get observedAttributes() {
-    return ['party-id', 'year', 'votes', 'name', 'elected', 'government', 'empty'];
+    return ['party-id', 'year', 'votes', 'elected', 'government', 'empty'];
   }
 
   constructor() {
@@ -85,7 +85,8 @@ class PartyCard extends HTMLElement {
 
     const partyId = this.getAttribute('party-id');
     const year = this.getAttribute('year');
-    const name = this.getAttribute('name') || PartyData.getName(partyId);
+    const name = PartyData.getName(partyId);
+    const displayName = PartyData.getDisplayName(partyId, year);
     const votes = this.getAttribute('votes');
     const elected = this.getAttribute('elected') !== 'false';
     const government = this.hasAttribute('government');
@@ -102,7 +103,7 @@ class PartyCard extends HTMLElement {
       this._img.hidden = true;
     }
 
-    this._nameEl.textContent = name;
+    this._nameEl.textContent = displayName;
     this._votesEl.textContent = votes ? `${votes}%` : '';
   }
 }

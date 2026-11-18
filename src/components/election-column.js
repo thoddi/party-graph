@@ -27,7 +27,7 @@ template.innerHTML = `
 
 class ElectionColumn extends HTMLElement {
   static get observedAttributes() {
-    return ['year'];
+    return ['year', 'label'];
   }
 
   constructor() {
@@ -44,11 +44,17 @@ class ElectionColumn extends HTMLElement {
   }
 
   attributeChangedCallback(name) {
-    if (name === 'year') this._renderYear();
+    if (name === 'year' || name === 'label') this._renderYear();
   }
 
+  /** Numeric year of the election (used for logos and names). */
   get year() {
     return this.getAttribute('year');
+  }
+
+  /** Unique id of the column; differs from the year when there are two elections in one year. */
+  get electionKey() {
+    return this.getAttribute('election-key') || this.getAttribute('year');
   }
 
   set parties(partyList) {
@@ -61,7 +67,7 @@ class ElectionColumn extends HTMLElement {
   }
 
   _renderYear() {
-    this._yearLabel.textContent = this.getAttribute('year') || '';
+    this._yearLabel.textContent = this.getAttribute('label') || this.getAttribute('year') || '';
   }
 
   _renderParties() {
@@ -75,11 +81,10 @@ class ElectionColumn extends HTMLElement {
       } else {
         card.setAttribute('party-id', party.id);
         card.setAttribute('year', year);
-        if (party.name) card.setAttribute('name', party.name);
         if (party.votes != null) card.setAttribute('votes', party.votes);
         if (party.elected === false) card.setAttribute('elected', 'false');
         if (party.government) card.setAttribute('government', '');
-        card.id = `party-${year}-${party.id}`;
+        card.id = `party-${this.electionKey}-${party.id}`;
       }
       this._partiesContainer.appendChild(card);
     });
@@ -90,7 +95,7 @@ class ElectionColumn extends HTMLElement {
   }
 
   getPartyCardById(partyId) {
-    return this._partiesContainer.querySelector(`#party-${this.year}-${partyId}`);
+    return this._partiesContainer.querySelector(`#party-${this.electionKey}-${partyId}`);
   }
 }
 

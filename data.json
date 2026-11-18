@@ -1,36 +1,31 @@
 {
   "elections": [
     {
-      "year": 1923,
+      "date": "1923-10-27",
       "parties": [
         {
           "id": "borgara",
-          "name": "Borgara-flokkurinn",
           "votes": 53.6
         },
         {
           "id": "framsokn",
-          "name": "Framsókn",
           "votes": 26.6
         },
         {
           "id": "althyduflokkurinn",
-          "name": "Alþýðuflokkurinn",
           "votes": 16.2
         }
       ]
     },
     {
-      "year": 1927,
+      "date": "1927-07-09",
       "parties": [
         {
           "id": "ihald",
-          "name": "Íhaldsflokkurinn",
           "votes": 44
         },
         {
           "id": "frjalslyndir",
-          "name": "Frjálslyndir",
           "votes": 6.1
         },
         {
@@ -44,11 +39,10 @@
       ]
     },
     {
-      "year": 1931,
+      "date": "1931-06-12",
       "parties": [
         {
           "id": "sjalfstaedisflokkur",
-          "name": "Sjálfstæðis-flokkurinn",
           "votes": 43.3
         },
         {},
@@ -62,14 +56,13 @@
         },
         {
           "id": "kommunistar",
-          "name": "Kommúnista-flokkurinn",
           "votes": 3,
           "elected": false
         }
       ]
     },
     {
-      "year": 1933,
+      "date": "1933-07-16",
       "parties": [
         {
           "id": "sjalfstaedisflokkur",
@@ -86,14 +79,13 @@
         },
         {
           "id": "kommunistar",
-          "name": "Kommúnista-flokkurinn",
           "votes": 7.5,
           "elected": false
         }
       ]
     },
     {
-      "year": 1934,
+      "date": "1934-06-24",
       "parties": [
         {
           "id": "sjalfstaedisflokkur",
@@ -101,13 +93,11 @@
         },
         {
           "id": "thjodernissinnar",
-          "name": "Þjóðernissinnar",
           "votes": 0.7,
           "elected": false
         },
         {
           "id": "baenda",
-          "name": "Bændaflokkurinn",
           "votes": 6.4
         },
         {
@@ -120,14 +110,13 @@
         },
         {
           "id": "kommunistar",
-          "name": "Kommúnista-flokkurinn",
           "votes": 6,
           "elected": false
         }
       ]
     },
     {
-      "year": 1937,
+      "date": "1937-06-20",
       "parties": [
         {
           "id": "sjalfstaedisflokkur",
@@ -135,13 +124,11 @@
         },
         {
           "id": "thjodernissinnar",
-          "name": "Þjóðernissinnar",
           "votes": 0.2,
           "elected": false
         },
         {
           "id": "baenda",
-          "name": "Bændaflokkurinn",
           "votes": 6.1
         },
         {
@@ -154,13 +141,13 @@
         },
         {
           "id": "kommunistar",
-          "name": "Kommúnista-flokkurinn",
           "votes": 8.4
         }
       ]
     },
     {
-      "year": "1942 (júlí)",
+      "date": "1942-07-05",
+      "label": "1942 (júlí)",
       "parties": [
         {
           "id": "sjalfstaedisflokkur",
@@ -168,7 +155,6 @@
         },
         {
           "id": "thjodernissinnar",
-          "name": "Þjóðernissinnar",
           "votes": 1,
           "elected": false
         },
@@ -178,7 +164,6 @@
         },
         {
           "id": "frjalslyndirv",
-          "name": "Frjálslyndir vinstrimenn",
           "votes": 0.2,
           "elected": false
         },
@@ -188,13 +173,13 @@
         },
         {
           "id": "sosialistar",
-          "name": "Sósíalista-flokkurinn",
           "votes": 16.2
         }
       ]
     },
     {
-      "year": "1942 (október)",
+      "date": "1942-10-18",
+      "label": "1942 (október)",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 38.3 },
         {},
@@ -205,7 +190,7 @@
       ]
     },
     {
-      "year": 1946,
+      "date": "1946-06-30",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 39.5, "government": true },
         { "id": "framsokn", "votes": 23.1, "government": true },
@@ -215,7 +200,7 @@
       ]
     },
     {
-      "year": 1949,
+      "date": "1949-10-23",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 39.5, "government": true },
         { "id": "framsokn", "votes": 24.5, "government": true },
@@ -224,48 +209,50 @@
       ]
     },
     {
-      "year": 1953,
+      "date": "1953-06-28",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 37.1, "government": true },
         { "id": "framsokn", "votes": 21.9, "government": true },
         { "id": "althyduflokkurinn", "votes": 15.6 },
         { "id": "sosialistar", "votes": 16 },
-        { "id": "thjodvarnar", "name": "Þjóðvarnar-flokkurinn", "votes": 6 },
-        { "id": "lydveldis", "name": "Lýðveldis-flokkurinn", "votes": 3.3, "elected": false }
+        { "id": "thjodvarnar", "votes": 6 },
+        { "id": "lydveldis", "votes": 3.3, "elected": false }
       ]
     },
     {
-      "year": 1956,
+      "date": "1956-06-24",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 42.2 },
         { "id": "framsokn", "votes": 15.6, "government": true },
         { "id": "althyduflokkurinn", "votes": 18.3, "government": true },
-        { "id": "bandalag", "name": "Alþýðubandalagið", "votes": 19.2 },
-        { "id": "thjodvarnar", "name": "Þjóðvarnar-flokkurinn", "votes": 4.5, "elected": false }
+        { "id": "bandalag", "votes": 19.2 },
+        { "id": "thjodvarnar", "votes": 4.5, "elected": false }
       ]
     },
     {
-      "year": "1959 (júní)",
+      "date": "1959-06-28",
+      "label": "1959 (júní)",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 42.5, "government": true },
         { "id": "framsokn", "votes": 27.2 },
         { "id": "althyduflokkurinn", "votes": 12.5, "government": true },
         { "id": "bandalag", "votes": 15.2 },
-        { "id": "thjodvarnar", "name": "Þjóðvarnar-flokkurinn", "votes": 2.5, "elected": false }
+        { "id": "thjodvarnar", "votes": 2.5, "elected": false }
       ]
     },
     {
-      "year": "1959 (október)",
+      "date": "1959-10-25",
+      "label": "1959 (október)",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 39.7, "government": true },
         { "id": "framsokn", "votes": 25.7 },
         { "id": "althyduflokkurinn", "votes": 15.2, "government": true },
         { "id": "bandalag", "votes": 16 },
-        { "id": "thjodvarnar", "name": "Þjóðvarnar-flokkurinn", "votes": 3.4, "elected": false }
+        { "id": "thjodvarnar", "votes": 3.4, "elected": false }
       ]
     },
     {
-      "year": 1963,
+      "date": "1963-06-09",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 41.4, "government": true },
         { "id": "framsokn", "votes": 28.2 },
@@ -274,55 +261,55 @@
       ]
     },
     {
-      "year": 1967,
+      "date": "1967-06-11",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 37.5, "government": true },
         { "id": "framsokn", "votes": 28.1 },
         { "id": "althyduflokkurinn", "votes": 15.7, "government": true },
-        { "id": "ohadilyd", "name": "Óháði lýðræðisflokkurinn", "votes": 1.1, "elected": false },
+        { "id": "ohadilyd", "votes": 1.1, "elected": false },
         { "id": "bandalag", "votes": 17.6 }
       ]
     },
     {
-      "year": 1971,
+      "date": "1971-06-13",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 36.2 },
         { "id": "framsokn", "votes": 25.3, "government": true },
         { "id": "althyduflokkurinn", "votes": 10.5 },
-        { "id": "sfv", "name": "Samtök frjálslyndra og vinstrimanna", "votes": 8.9, "government": true },
+        { "id": "sfv", "votes": 8.9, "government": true },
         {},
         { "id": "bandalag", "votes": 17.1 },
-        { "id": "f","name": "Framboðsflokkurinn", "votes": 2, "elected":  false }
+        { "id": "f", "votes": 2, "elected":  false }
       ]
     },
     {
-      "year": 1974,
+      "date": "1974-06-30",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 42.7, "government": true },
         { "id": "framsokn", "votes": 24.9, "government": true },
         { "id": "althyduflokkurinn", "votes": 9.1 },
         { "id": "sfv", "votes": 4.6 },
-        { "id": "komm", "name": "Kommúnistaflokkur Íslands", "votes": 0.1, "elected": false},
-        { "id": "fylking", "name": "Fylking", "votes": 0.2, "elected": false},
+        { "id": "komm", "votes": 0.1, "elected": false},
+        { "id": "fylking", "votes": 0.2, "elected": false},
         { "id": "bandalag", "votes": 18.3 },
-        { "id": "lyd","name": "Lýðræðisflokkurinn", "votes": 0.1, "elected":  false }
+        { "id": "lyd", "votes": 0.1, "elected":  false }
       ]
     },
     {
-      "year": 1978,
+      "date": "1978-06-25",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 32.7 },
         { "id": "framsokn", "votes": 16.9, "government": true },
         { "id": "althyduflokkurinn", "votes": 22, "government": true },
         { "id": "sfv", "votes": 3.3, "elected": false },
         { "id": "komm", "votes": 0.1, "elected": false },
-        { "id": "fylking", "name": "Fylking byltingarsinnaðra kommúnista", "votes": 0.2, "elected": false},
+        { "id": "fylking", "votes": 0.2, "elected": false},
         { "id": "bandalag", "votes": 22.9 },
-        { "id": "stj","name": "Stjórnmálaflokkurinn", "votes": 0.4, "elected":  false }
+        { "id": "stj", "votes": 0.4, "elected":  false }
       ]
     },
     {
-      "year": 1979,
+      "date": "1979-12-02",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 35.4, "government": true },
         { "id": "framsokn", "votes": 24.9, "government": true },
@@ -331,39 +318,39 @@
         {},
         { "id": "fylking", "votes": 0.4, "elected": false},
         { "id": "bandalag", "votes": 19.7 },
-        { "id": "hinn","name": "Hinn flokkurinn", "votes": 0.2, "elected":  false },
-        { "id": "sol","name": "Sólskinsflokkurinn", "votes": 0.1, "elected":  false }
+        { "id": "hinn", "votes": 0.2, "elected":  false },
+        { "id": "sol", "votes": 0.1, "elected":  false }
       ]
     },
     {
-      "year": 1983,
+      "date": "1983-04-23",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 38.6, "government": true },
         {},
         { "id": "framsokn", "votes": 18.5, "government": true },
         { "id": "althyduflokkurinn", "votes": 11.7 },
-        { "id": "bandaja", "name": "Bandalag jafnaðarmanna", "votes": 7.3 },
-        { "id": "kvenna", "name": "Kvennalistinn", "votes": 5.5},
+        { "id": "bandaja", "votes": 7.3 },
+        { "id": "kvenna", "votes": 5.5},
         { "id": "bandalag", "votes": 17.3 }
       ]
     },
     {
-      "year": 1987,
+      "date": "1987-04-25",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 27.2, "government": true },
-        { "id": "borgarafl", "name": "Borgaraflokkurinn", "votes": 10.9 },
-        { "id": "samtok", "name": "Samtök um jafnrétti og félagshyggju", "votes": 1.3 },
+        { "id": "borgarafl", "votes": 10.9 },
+        { "id": "samtok", "votes": 1.3 },
         { "id": "framsokn", "votes": 18.9, "government": true },
         { "id": "althyduflokkurinn", "votes": 15.2, "government": true },
         { "id": "bandaja", "votes": 0.1, "elected": false },
         { "id": "kvenna", "votes": 10.1 },
         { "id": "bandalag", "votes": 13.3 },
-        { "id": "mannsins", "name": "Flokkur mannsins", "votes": 1.5, "elected": false },
-        { "id": "thjodar", "name": "Þjóðarflokkurinn", "votes": 1.4, "elected": false }
+        { "id": "mannsins", "votes": 1.5, "elected": false },
+        { "id": "thjodar", "votes": 1.4, "elected": false }
       ]
     },
     {
-      "year": 1991,
+      "date": "1991-04-20",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 38.6, "government": true },
         { "id": "frjalslyndir1991", "votes": 0.6 },
@@ -373,32 +360,32 @@
         { "id": "althyduflokkurinn", "votes": 15.5, "government": true },
         { "id": "kvenna", "votes": 8.3 },
         { "id": "bandalag", "votes": 14.4 },
-        { "id": "humanistarthjod", "name": "Þjóðarflokkurinn / Flokkur mannsins", "votes": 1.8, "elected": false },
-        { "id": "heima", "name": "Heimastjórnarsamtökin", "votes": 0.3, "elected": false },
-        { "id": "graent", "name": "Grænt framboð", "votes": 0.1, "elected": false },
-        { "id": "ofga", "name": "Samtök öfgasinnaðra jafnaðarmanna", "votes": 0.1, "elected": false },
-        { "id": "verka", "name": "Verkamannaflokkur Íslands", "votes": 0.01, "elected": false }
+        { "id": "humanistarthjod", "votes": 1.8, "elected": false },
+        { "id": "heima", "votes": 0.3, "elected": false },
+        { "id": "graent", "votes": 0.1, "elected": false },
+        { "id": "ofga", "votes": 0.1, "elected": false },
+        { "id": "verka", "votes": 0.01, "elected": false }
       ]
     },
     {
-      "year": 1995,
+      "date": "1995-04-08",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 37.1, "government": true },
         {},
         {},
         {},
         { "id": "framsokn", "votes": 23.3, "government": true },
-        { "id": "thjodvaki", "name": "Þjóðvaki", "votes": 7.2 },
+        { "id": "thjodvaki", "votes": 7.2 },
         { "id": "althyduflokkurinn", "votes": 11.4 },
         { "id": "kvenna", "votes": 4.9 },
         { "id": "bandalag", "votes": 14.3 },
         {},
-        { "id": "natturu", "name": "Náttúrulagaflokkurinn", "votes": 0.6, "elected": false },
-        { "id": "kristileg", "name": "Kristileg stjórnmálasamtök", "votes": 0.2, "elected": false }
+        { "id": "natturu", "votes": 0.6, "elected": false },
+        { "id": "kristileg", "votes": 0.2, "elected": false }
       ]
     },
     {
-      "year": 1999,
+      "date": "1999-05-08",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 40.7, "government": true },
         { "id": "frjalslyndi", "votes": 4.2 },
@@ -407,17 +394,17 @@
         {},
         { "id": "framsokn", "votes": 18.4, "government": true },
         {},
-        { "id": "samfylking", "name": "Samfylkingin", "votes": 26.8 },
-        { "id": "vg", "name": "Vinstri grænir", "votes": 9.1 },
-        { "id": "humanistar", "name": "Húmanistaflokkurinn", "votes": 0.4, "elected": false },
-        { "id": "anarkistar", "name": "Anarkistar á Íslandi", "votes": 0.1, "elected": false }
+        { "id": "samfylking", "votes": 26.8 },
+        { "id": "vg", "votes": 9.1 },
+        { "id": "humanistar", "votes": 0.4, "elected": false },
+        { "id": "anarkistar", "votes": 0.1, "elected": false }
       ]
     },
     {
-      "year": 2003,
+      "date": "2003-05-10",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 33.7, "government": true },
-        { "id": "afl", "name": "Nýtt afl", "votes": 1, "elected": false },
+        { "id": "afl", "votes": 1, "elected": false },
         { "id": "frjalslyndi", "votes": 7.4 },
         {},
         {},
@@ -428,13 +415,13 @@
       ]
     },
     {
-      "year": 2007,
+      "date": "2007-05-12",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 36.6, "government": true },
         {},
         { "id": "frjalslyndi", "votes": 7.3 },
         {},
-        { "id": "islandshr", "name": "Íslandshreyfingin", "votes": 3.3, "elected": false },
+        { "id": "islandshr", "votes": 3.3, "elected": false },
         {},
         { "id": "samfylking", "votes": 26.8, "government": true },
         { "id": "framsokn", "votes": 11.7 },
@@ -443,12 +430,12 @@
       ]
     },
     {
-      "year": 2009,
+      "date": "2009-04-25",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 23.7 },
         {},
         { "id": "frjalslyndi", "votes": 2.2, "elected": false },
-        { "id": "borgarahr", "name": "Borgarahreyfingin", "votes": 7.2 },
+        { "id": "borgarahr", "votes": 7.2 },
         {},
         { "id": "samfylking", "votes": 29.8, "government": true },
         {},
@@ -456,40 +443,40 @@
         { "id": "framsokn", "votes": 14.8 },
         {},
         { "id": "vg", "votes": 21.7, "government": true },
-        { "id": "lydraedishr", "name": "Lýðræðishreyfingin", "votes": 0.6, "elected": false }
+        { "id": "lydraedishr", "votes": 0.6, "elected": false }
       ]
     },
     {
-      "year": 2013,
+      "date": "2013-04-27",
       "parties": [
-        { "id": "hg", "name": "Hægri grænir", "votes": 1.7, "elected": false },
+        { "id": "hg", "votes": 1.7, "elected": false },
         { "id": "sjalfstaedisflokkur", "votes": 26.7, "government": true },
-        { "id": "sturla", "name": "Sturla Jónsson", "votes": 0.1, "elected": false },
-        { "id": "dogun", "name": "Dögun", "votes": 3.1, "elected": false },
+        { "id": "sturla", "votes": 0.1, "elected": false },
+        { "id": "dogun", "votes": 3.1, "elected": false },
         { "id": "samfylking", "votes": 12.9 },
-        { "id": "piratar", "name": "Píratar", "votes": 5.1 },
+        { "id": "piratar", "votes": 5.1 },
         {},
         { "id": "framsokn", "votes": 24.4, "government": true },
-        { "id": "bf", "name": "Björt framtíð", "votes": 8.2 },
-        { "id": "regnboginn", "name": "Regnboginn", "votes": 1.1, "elected": false },
+        { "id": "bf", "votes": 8.2 },
+        { "id": "regnboginn", "votes": 1.1, "elected": false },
         { "id": "vg", "votes": 10.9 },
-        { "id": "althydufylking", "name": "Alþýðufylkingin", "votes": 0.1, "elected": false },
+        { "id": "althydufylking", "votes": 0.1, "elected": false },
         { "id": "humanistar", "votes": 0.1, "elected": false },
         { "id": "flheim", "votes": 3, "elected": false },
-        { "id": "lydvaktin", "name": "Lýðræðisvaktin", "votes": 2.5, "elected": false },
-        { "id": "landsb", "name": "Landsbyggðarflokkurinn", "votes": 0.2, "elected": false }
+        { "id": "lydvaktin", "votes": 2.5, "elected": false },
+        { "id": "landsb", "votes": 0.2, "elected": false }
       ]
     },
     {
-      "year": 2016,
+      "date": "2016-10-29",
       "parties": [
         { "id": "islthj", "votes": 0.2, "elected": false },
         { "id": "sjalfstaedisflokkur", "votes": 29, "government": true },
-        { "id": "vidreisn", "name": "Viðreisn", "votes": 10.5, "government": true },
+        { "id": "vidreisn", "votes": 10.5, "government": true },
         { "id": "dogun", "votes": 1.7, "elected": false },
         { "id": "samfylking", "votes": 5.7 },
-        { "id": "flfolksins", "name": "Flokkur fólksins", "votes": 3.5, "elected": false },
-        { "id": "piratar", "name": "Píratar", "votes": 14.5 },
+        { "id": "flfolksins", "votes": 3.5, "elected": false },
+        { "id": "piratar", "votes": 14.5 },
         { "id": "framsokn", "votes": 11.5 },
         {},
         { "id": "bf", "votes": 7.2, "government": true },
@@ -499,7 +486,7 @@
       ]
     },
     {
-      "year": 2017,
+      "date": "2017-10-28",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 25.3, "government": true },
         {},
@@ -516,10 +503,10 @@
       ]
     },
     {
-      "year": 2021,
+      "date": "2021-09-25",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 24.4, "government": true },
-        { "id": "frjalydfl", "name": "Frjálslyndi lýðræðisflokkurinn", "votes": 0.4, "elected": false },
+        { "id": "frjalydfl", "votes": 0.4, "elected": false },
         { "id": "vidreisn", "votes": 8.3 },
         { "id": "samfylking", "votes": 9.9 },
         {},
@@ -528,12 +515,12 @@
         { "id": "piratar", "votes": 8.6 },
         { "id": "vg", "votes": 12.6, "government": true },
         { "id": "framsokn", "votes": 17.3, "government": true },
-        { "id": "sosialistafl", "name": "Sósíalistaflokkur Íslands", "votes": 4.1, "elected": false },
+        { "id": "sosialistafl", "votes": 4.1, "elected": false },
         { "id": "abyrgfr", "votes": 0.1, "elected": false }
       ]
     },
     {
-      "year": 2024,
+      "date": "2024-11-30",
       "parties": [
         { "id": "sjalfstaedisflokkur", "votes": 19.4 },
         { "id": "lydraedisfl", "votes": 1, "elected": false },
