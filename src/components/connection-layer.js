@@ -30,8 +30,8 @@ template.innerHTML = `
  * - A single SVG surface is far more performant than many individual elements
  *
  * Instead, this component owns one SVG and exposes a `draw()` method that
- * accepts the full data model and references to column elements, then
- * renders all lines, hit areas, and group circles internally.
+ * accepts the graph model (see services/graph-model.js) and references to
+ * column elements, then renders all lines, hit areas, and group circles internally.
  */
 class ConnectionLayer extends HTMLElement {
   constructor() {
@@ -69,14 +69,14 @@ class ConnectionLayer extends HTMLElement {
   }
 
   /**
-   * Draw all connections, groups, and auto-links.
-   * @param {Object} data - The election data (elections, connections, groups)
+   * Draw all lines and group nodes.
+   * @param {Object} graph - The graph model from buildGraph(): elections, edges and nodes
    * @param {HTMLElement[]} columnElements - Array of <election-column> elements
    * @param {HTMLElement} container - The container element for coordinate calculation
    */
-  draw(data, columnElements, container) {
+  draw(graph, columnElements, container) {
     this._svg.innerHTML = '';
-    if (!data || !columnElements || !container) return;
+    if (!graph || !columnElements || !container) return;
 
     const containerRect = container.getBoundingClientRect();
     const width = container.scrollWidth;
@@ -87,43 +87,28 @@ class ConnectionLayer extends HTMLElement {
     this.style.width = width + 'px';
     this.style.height = height + 'px';
 
-    const partyBoxes = this._collectPartyBoxes(data, columnElements, containerRect);
+    const partyBoxes = this._collectPartyBoxes(graph.elections, columnElements);
 
-    // Draw explicit connections
-    if (data.connections) {
-      data.connections.forEach(conn => {
-        const fromBox = partyBoxes[`${conn.from.year}-${conn.from.partyId}`];
-        const toBox = partyBoxes[`${conn.to.year}-${conn.to.partyId}`];
-        this._drawLine(fromBox, toBox, conn.type, conn.description, containerRect);
-      });
-    }
+    graph.edges.forEach(edge => {
+      const fromBox = partyBoxes[`${edge.fromKey}-${edge.fromId}`];
+      const toBox = partyBoxes[`${edge.toKey}-${edge.toId}`];
+      if (!fromBox || !toBox) return;
+      const from = this._getBoxCenter(fromBox, containerRect);
+      const to = this._getBoxCenter(toBox, containerRect);
+      this._drawLine(from, to, edge.kind === 'defection');
+      if (edge.description) this._drawHitLine(from, to, edge.description);
+    });
 
-    // Draw auto connections (same party in consecutive elections)
-    for (let i = 1; i < data.elections.length; i++) {
-      const prev = data.elections[i - 1];
-      const curr = data.elections[i];
-      prev.parties.forEach(prevParty => {
-        if (!prevParty || !prevParty.id) return;
-        const currParty = curr.parties.find(p => p && p.id === prevParty.id);
-        if (currParty) {
-          const fromBox = partyBoxes[`${prev.key}-${prevParty.id}`];
-          const toBox = partyBoxes[`${curr.key}-${currParty.id}`];
-          this._drawLine(fromBox, toBox, 'solid', null, containerRect);
-        }
-      });
-    }
-
-    // Draw groups
-    this._drawGroups(data, columnElements, partyBoxes, containerRect);
+    this._drawNodes(graph, columnElements, partyBoxes, containerRect);
   }
 
-  _collectPartyBoxes(data, columnElements, containerRect) {
+  _collectPartyBoxes(elections, columnElements) {
     const boxes = {};
     columnElements.forEach((col, colIdx) => {
-      if (!data.elections[colIdx]) return;
-      const key = data.elections[colIdx].key;
+      if (!elections[colIdx]) return;
+      const key = elections[colIdx].key;
       const cards = col.getPartyCardElements();
-      data.elections[colIdx].parties.forEach((party, pIdx) => {
+      elections[colIdx].parties.forEach((party, pIdx) => {
         if (party && party.id && cards[pIdx]) {
           boxes[`${key}-${party.id}`] = cards[pIdx];
         }
@@ -140,11 +125,8 @@ class ConnectionLayer extends HTMLElement {
     };
   }
 
-  _drawLine(fromBox, toBox, type, description, containerRect) {
-    if (!fromBox || !toBox) return;
-    const from = this._getBoxCenter(fromBox, containerRect);
-    const to = this._getBoxCenter(toBox, containerRect);
-
+  /** The one place a line is built: solid for a succession, dashed for a defection. */
+  _drawLine(from, to, dashed) {
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', from.x);
     line.setAttribute('y1', from.y);
@@ -152,101 +134,57 @@ class ConnectionLayer extends HTMLElement {
     line.setAttribute('y2', to.y);
     line.setAttribute('stroke', '#333');
     line.setAttribute('stroke-width', '2');
-    if (type === 'dashed') {
-      line.setAttribute('stroke-dasharray', '6,4');
-    }
+    if (dashed) line.setAttribute('stroke-dasharray', '6,4');
     this._svg.appendChild(line);
-
-    if (description) {
-      const hitLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      hitLine.setAttribute('x1', from.x);
-      hitLine.setAttribute('y1', from.y);
-      hitLine.setAttribute('x2', to.x);
-      hitLine.setAttribute('y2', to.y);
-      hitLine.setAttribute('stroke', 'transparent');
-      hitLine.setAttribute('stroke-width', '16');
-      hitLine.setAttribute('pointer-events', 'stroke');
-      hitLine.classList.add('hit-line');
-      hitLine.addEventListener('mousemove', evt => this._showPopover(description, evt));
-      hitLine.addEventListener('mouseleave', () => this._hidePopover());
-      this._svg.appendChild(hitLine);
-    }
   }
 
-  _drawGroups(data, columnElements, partyBoxes, containerRect) {
-    if (!data.groups) return;
+  /** A wide transparent line on top of a real one, to show `description` on hover. */
+  _drawHitLine(from, to, description) {
+    const hitLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    hitLine.setAttribute('x1', from.x);
+    hitLine.setAttribute('y1', from.y);
+    hitLine.setAttribute('x2', to.x);
+    hitLine.setAttribute('y2', to.y);
+    hitLine.setAttribute('stroke', 'transparent');
+    hitLine.setAttribute('stroke-width', '16');
+    hitLine.setAttribute('pointer-events', 'stroke');
+    hitLine.classList.add('hit-line');
+    hitLine.addEventListener('mousemove', evt => this._showPopover(description, evt));
+    hitLine.addEventListener('mouseleave', () => this._hidePopover());
+    this._svg.appendChild(hitLine);
+  }
 
-    data.groups.forEach(group => {
-      let prevColIdx = -1, nextColIdx = -1;
-      for (let i = 0; i < data.elections.length - 1; i++) {
-        if (group.year > data.elections[i].year && group.year < data.elections[i + 1].year) {
-          prevColIdx = i;
-          nextColIdx = i + 1;
-          break;
-        }
-      }
-      if (prevColIdx === -1 || nextColIdx === -1) return;
+  _drawNodes(graph, columnElements, partyBoxes, containerRect) {
+    const colIndex = key => graph.elections.findIndex(e => e.key === key);
 
-      const prevCol = columnElements[prevColIdx];
-      const nextCol = columnElements[nextColIdx];
+    graph.nodes.forEach(node => {
+      const prevCol = columnElements[colIndex(node.prevKey)];
+      const nextCol = columnElements[colIndex(node.nextKey)];
       if (!prevCol || !nextCol) return;
 
       const prevRect = prevCol.getBoundingClientRect();
       const nextRect = nextCol.getBoundingClientRect();
       const x = ((prevRect.right + nextRect.left) / 2) - containerRect.left;
 
-      let yPositions = [];
-      group.members.forEach(pid => {
-        const box = partyBoxes[`${data.elections[prevColIdx].key}-${pid}`];
-        if (box) yPositions.push(this._getBoxCenter(box, containerRect).y);
-      });
-      group.splitsTo.forEach(pid => {
-        const box = partyBoxes[`${data.elections[nextColIdx].key}-${pid}`];
-        if (box) yPositions.push(this._getBoxCenter(box, containerRect).y);
-      });
+      const centre = leg => {
+        const box = partyBoxes[`${leg.key}-${leg.id}`];
+        return box ? this._getBoxCenter(box, containerRect) : null;
+      };
+      const sources = node.sources.map(leg => ({ leg, pos: centre(leg) })).filter(s => s.pos);
+      const targets = node.targets.map(leg => ({ leg, pos: centre(leg) })).filter(t => t.pos);
 
-      let y;
-      if (yPositions.length > 0) {
-        y = yPositions.reduce((a, b) => a + b, 0) / yPositions.length;
-      } else {
-        y = ((prevRect.top + nextRect.top + prevRect.bottom + nextRect.bottom) / 4) - containerRect.top;
-      }
+      const ys = [...sources, ...targets].map(l => l.pos.y);
+      const y = ys.length > 0
+        ? ys.reduce((a, b) => a + b, 0) / ys.length
+        : ((prevRect.top + nextRect.top + prevRect.bottom + nextRect.bottom) / 4) - containerRect.top;
 
       const r = 18;
+      const here = { x, y };
 
-      // Lines from members to group center
-      group.members.forEach(pid => {
-        const box = partyBoxes[`${data.elections[prevColIdx].key}-${pid}`];
-        if (!box) return;
-        const from = this._getBoxCenter(box, containerRect);
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', from.x);
-        line.setAttribute('y1', from.y);
-        line.setAttribute('x2', x);
-        line.setAttribute('y2', y);
-        line.setAttribute('stroke', '#333');
-        line.setAttribute('stroke-width', '2');
-        line.setAttribute('stroke-dasharray', '6,4');
-        this._svg.appendChild(line);
-      });
+      sources.forEach(({ leg, pos }) => this._drawLine(pos, here, leg.kind === 'defection'));
+      targets.forEach(({ leg, pos }) => this._drawLine(here, pos, leg.kind === 'defection'));
 
-      // Lines from group center to splitsTo
-      group.splitsTo.forEach(pid => {
-        const box = partyBoxes[`${data.elections[nextColIdx].key}-${pid}`];
-        if (!box) return;
-        const to = this._getBoxCenter(box, containerRect);
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', x);
-        line.setAttribute('y1', y);
-        line.setAttribute('x2', to.x);
-        line.setAttribute('y2', to.y);
-        line.setAttribute('stroke', '#333');
-        line.setAttribute('stroke-width', '2');
-        line.setAttribute('stroke-dasharray', '6,4');
-        this._svg.appendChild(line);
-      });
-
-      // Group circle
+      // Node circle
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       circle.setAttribute('cx', x);
       circle.setAttribute('cy', y);
@@ -256,14 +194,14 @@ class ConnectionLayer extends HTMLElement {
       circle.setAttribute('stroke-width', '2');
       this._svg.appendChild(circle);
 
-      // Group label
-      if (group.label) {
+      // Node label
+      if (node.label) {
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', x);
         text.setAttribute('y', y + 30);
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('font-size', '14px');
-        text.textContent = group.label;
+        text.textContent = node.label;
         this._svg.appendChild(text);
       }
     });

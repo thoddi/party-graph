@@ -9,8 +9,8 @@
  *
  * normalize() adds:
  *   - `year`: numeric year, taken from `date`.
- *   - `key`:  unique id of the column (the label, or the year as text). Hand-written
- *             connections refer to a column by this key.
+ *   - `key`:  unique id of the column (the label, or the year as text). Lines and card
+ *             ids use it to tell columns apart, e.g. the two elections in 1942.
  */
 export function normalizeElections(data) {
   for (const election of data.elections) {

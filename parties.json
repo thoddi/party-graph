@@ -2,13 +2,15 @@
   {
     "id": "borgara",
     "name": "Borgaraflokkurinn",
-    "displayName": "Borgara­flokkurinn",
-    "joinedTo": "ihald"
+    "displayName": "Borgara­flokkurinn"
   },
   {
     "id": "framsokn",
     "name": "Framsóknarflokkurinn",
     "formed": 1916,
+    "origins": [
+      { "from": "baenda", "date": "1942-07-05", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1923": "images/framsokn1.png",
       "2007": "images/framsokn2.png",
@@ -22,7 +24,9 @@
     "id": "althyduflokkurinn",
     "name": "Alþýðuflokkurinn",
     "formed": 1916,
-    "joinedTo": "samfylking",
+    "origins": [
+      { "from": "bandaja", "date": "1991-04-20", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1923": "images/althyduflokkurinn.png"
     }
@@ -30,19 +34,29 @@
   {
     "id": "ihald",
     "name": "Íhaldsflokkurinn",
-    "joinedTo": "sjalfstaedisflokkur"
+    "origins": [
+      { "from": "borgara", "date": "1927-07-09", "kind": "succession", "scope": "althingi" }
+    ]
   },
   {
     "id": "frjalslyndir",
     "name": "Frjálslyndir",
-    "splitFrom": [ "borgara" ],
-    "joinedTo": "sjalfstaedisflokkur"
+    "origins": [
+      { "from": "borgara", "date": "1927-07-09", "kind": "defection", "scope": "althingi" }
+    ]
   },
   {
     "id": "sjalfstaedisflokkur",
     "name": "Sjálfstæðisflokkurinn",
     "displayName": "Sjálfstæðis­flokkurinn",
     "formed": 1929,
+    "origins": [
+      { "from": "ihald", "date": "1931-06-12", "kind": "succession", "scope": "althingi" },
+      { "from": "frjalslyndir", "date": "1931-06-12", "kind": "defection", "scope": "althingi" },
+      { "from": "baenda", "date": "1942-07-05", "kind": "defection", "scope": "althingi" },
+      { "from": "borgarafl", "date": "1991-04-20", "kind": "defection", "scope": "althingi" },
+      { "from": "hg", "date": "2016-10-29", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1931": "images/sjalfstaedis1.jpg",
       "1991": "images/sjalfstaedis2.png",
@@ -53,25 +67,30 @@
     "id": "kommunistar",
     "name": "Kommúnistaflokkur Íslands",
     "displayName": "Kommúnista­flokkurinn",
-    "splitFrom": [ "althyduflokkurinn" ],
-    "joinedTo": "sosialistar"
+    "origins": [
+      { "from": "althyduflokkurinn", "date": "1931-06-12", "kind": "defection", "scope": "althingi" },
+      { "from": "althyduflokkurinn", "date": "1934-01", "kind": "defection", "scope": "borgarstjorn" }
+    ]
   },
   {
     "id": "thjodernishreyfingin",
+    "type": "group",
     "name": "Þjóðernishreyfingin",
     "formed": 1933,
     "disbanded": 1934,
-    "splitFrom": [ "sjalfstaedisflokkur", "framsokn" ],
-    "logos": {
-      "1933": "images/thjodernissinnar.png"
-    }
+    "origins": [
+      { "from": "framsokn", "date": "1933", "kind": "defection", "scope": "both" },
+      { "from": "sjalfstaedisflokkur", "date": "1933", "kind": "defection", "scope": "both" }
+    ]
   },
   {
     "id": "thjodernissinnar",
     "name": "Þjóðernissinnar",
     "formed": 1934,
     "disbanded": 1944,
-    "splitFrom": [ "thjodernishreyfingin" ],
+    "origins": [
+      { "from": "thjodernishreyfingin", "date": "1933", "kind": "defection", "scope": "both" }
+    ],
     "logos": {
       "1934": "images/thjodernissinnar.png"
     }
@@ -79,19 +98,26 @@
   {
     "id": "baenda",
     "name": "Bændaflokkurinn",
-    "splitFrom": [ "framsokn" ]
+    "origins": [
+      { "from": "framsokn", "date": "1934-06-24", "kind": "defection", "scope": "althingi" }
+    ]
   },
   {
     "id": "frjalslyndirv",
     "name": "Frjálslyndir vinstrimenn",
-    "splitFrom": [ "framsokn" ]
+    "origins": [
+      { "from": "framsokn", "date": "1942-07-05", "kind": "defection", "scope": "althingi" }
+    ]
   },
   {
     "id": "sosialistar",
     "name": "Sósíalistaflokkurinn",
     "displayName": "Sósíalista­flokkurinn",
-    "splitFrom": [ "althyduflokkurinn" ],
-    "joinedTo": "bandalag",
+    "origins": [
+      { "from": "kommunistar", "date": "1942-07-05", "kind": "succession", "scope": "althingi" },
+      { "from": "althyduflokkurinn", "date": "1942-07-05", "kind": "defection", "scope": "althingi" },
+      { "from": "althyduflokkurinn+kommunistar", "date": "1942-03-15", "kind": "succession", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "1942": "images/sosialistar1.png"
     }
@@ -109,8 +135,15 @@
   {
     "id": "bandalag",
     "name": "Alþýðubandalagið",
-    "splitFrom": [ "althyduflokkurinn" ],
-    "joinedTo": "samfylking",
+    "origins": [
+      { "from": "althyduflokkurinn", "date": "1956-06-24", "kind": "defection", "scope": "althingi" },
+      { "from": "sosialistar", "date": "1956-06-24", "kind": "succession", "scope": "althingi" },
+      { "from": "thjodvarnar", "date": "1963-06-09", "kind": "defection", "scope": "althingi" },
+      { "from": "fylking", "date": "1983-04-23", "kind": "defection", "scope": "althingi" },
+      { "from": "althyduflokkurinn", "date": "1962-05-26", "kind": "defection", "scope": "borgarstjorn" },
+      { "from": "sosialistar", "date": "1962-05-26", "kind": "succession", "scope": "borgarstjorn" },
+      { "from": "thjodvarnar", "date": "1966-05-21", "kind": "defection", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "1956": "images/bandalag.jpg"
     }
@@ -118,12 +151,16 @@
   {
     "id": "ohadilyd",
     "name": "Óháði lýðræðisflokkurinn",
-    "splitFrom": [ "althyduflokkurinn" ]
+    "origins": [
+      { "from": "althyduflokkurinn", "date": "1967-06-11", "kind": "defection", "scope": "althingi" }
+    ]
   },
   {
     "id": "sfv",
     "name": "Samtök frjálslyndra og vinstrimanna",
-    "splitFrom": [ "bandalag" ],
+    "origins": [
+      { "from": "bandalag", "date": "1971-06-13", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1970": "images/sfv.png"
     }
@@ -135,6 +172,9 @@
   {
     "id": "komm",
     "name": "Kommúnistaflokkur Íslands",
+    "origins": [
+      { "from": "group1971", "date": "1971", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1974": "images/komm.png"
     }
@@ -146,6 +186,9 @@
       "1978": "Fylking byltingarsinnaðra kommúnista",
       "1979": "Fylking"
     },
+    "origins": [
+      { "from": "group1971", "date": "1971", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1974": "images/fylking1.png",
       "1978": "images/fylking2.png"
@@ -170,7 +213,9 @@
   {
     "id": "bandaja",
     "name": "Bandalag jafnaðarmanna",
-    "splitFrom": [ "althyduflokkurinn" ],
+    "origins": [
+      { "from": "althyduflokkurinn", "date": "1983-04-23", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1983": "images/bandaja.jpg"
     }
@@ -178,7 +223,6 @@
   {
     "id": "kvenna",
     "name": "Kvennalistinn",
-    "joinedTo": "samfylking",
     "logos": {
       "1982": "images/kvenna.png"
     }
@@ -186,6 +230,9 @@
   {
     "id": "borgarafl",
     "name": "Borgaraflokkurinn",
+    "origins": [
+      { "from": "sjalfstaedisflokkur", "date": "1987-04-25", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1987": "images/borgara.svg"
     }
@@ -208,7 +255,11 @@
   {
     "id": "humanistarthjod",
     "name": "Þjóðarflokkurinn / Flokkur mannsins",
-    "formed": null
+    "formed": null,
+    "origins": [
+      { "from": "mannsins", "date": "1991-04-20", "kind": "defection", "scope": "althingi" },
+      { "from": "thjodar", "date": "1991-04-20", "kind": "defection", "scope": "althingi" }
+    ]
   },
   {
     "id": "heima",
@@ -250,7 +301,10 @@
   {
     "id": "frjalslyndir1991",
     "name": "Frjálslyndir",
-    "splitFrom": [ "borgarafl", "samtok" ],
+    "origins": [
+      { "from": "borgarafl", "date": "1991-04-20", "kind": "defection", "scope": "althingi" },
+      { "from": "samtok", "date": "1991-04-20", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1991": "images/frjalslyndir.png"
     }
@@ -258,6 +312,7 @@
   {
     "id": "rvk",
     "name": "Reykjavíkurlistinn",
+    "members": [ "framsokn", "vettvangur", "bandalag", "kvenna", "samfylking", "vg" ],
     "logos": {
       "1994": "images/rvk.jpg"
     }
@@ -265,6 +320,9 @@
   {
     "id": "thjodvaki",
     "name": "Þjóðvaki",
+    "origins": [
+      { "from": "althyduflokkurinn", "date": "1995-04-08", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1995": "images/Thjodvaki.png"
     }
@@ -272,6 +330,11 @@
   {
     "id": "frjalslyndi",
     "name": "Frjálslyndi flokkurinn",
+    "origins": [
+      { "from": "sjalfstaedisflokkur", "date": "1999-05-08", "kind": "defection", "scope": "althingi" },
+      { "from": "afl", "date": "2007-05-12", "kind": "defection", "scope": "althingi" },
+      { "from": "sjalfstaedisflokkur", "date": "2002-05-25", "kind": "defection", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "1999": "images/frjalslyndi.png"
     }
@@ -280,6 +343,13 @@
     "id": "samfylking",
     "name": "Samfylkingin",
     "formed": 1999,
+    "origins": [
+      { "from": "thjodvaki", "date": "1999-05-08", "kind": "defection", "scope": "althingi" },
+      { "from": "althyduflokkurinn", "date": "1999-05-08", "kind": "succession", "scope": "althingi" },
+      { "from": "kvenna", "date": "1999-05-08", "kind": "succession", "scope": "althingi" },
+      { "from": "bandalag", "date": "1999-05-08", "kind": "succession", "scope": "althingi" },
+      { "from": "islandshr", "date": "2009-04-25", "kind": "succession", "scope": "althingi" }
+    ],
     "logos": {
       "1999": "images/samfylking1.png",
       "2003": "images/samfylking2.png",
@@ -291,6 +361,9 @@
     "id": "vg",
     "name": "Vinstri grænir",
     "formed": 1999,
+    "origins": [
+      { "from": "bandalag", "date": "1999-05-08", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1999": "images/vg1.png",
       "2016": "images/vg2.png",
@@ -300,6 +373,9 @@
   {
     "id": "humanistar",
     "name": "Húmanistaflokkurinn",
+    "origins": [
+      { "from": "humanistarthjod", "date": "1999-05-08", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "1999": "images/humanistar1.png",
       "2013": "images/humanistar2.png"
@@ -322,6 +398,9 @@
   {
     "id": "islandshr",
     "name": "Íslandshreyfingin",
+    "origins": [
+      { "from": "frjalslyndi", "date": "2007-05-12", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "2007": "images/Islandshreyfingin.svg"
     }
@@ -341,6 +420,9 @@
   {
     "id": "fha",
     "name": "Framboð um heiðarleika og almennahagsmuni",
+    "origins": [
+      { "from": "frjalslyndi", "date": "2010-05-29", "kind": "defection", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "2010": "images/fha.png"
     }
@@ -370,6 +452,9 @@
   {
     "id": "sturla",
     "name": "Sturla Jónsson",
+    "origins": [
+      { "from": "frjalslyndi", "date": "2013-04-27", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "2013": "images/sturla.png"
     }
@@ -377,6 +462,13 @@
   {
     "id": "dogun",
     "name": "Dögun",
+    "origins": [
+      { "from": "hreyfingin", "date": "2009", "kind": "defection", "scope": "althingi" },
+      { "from": "borgarahr", "date": "2013-04-27", "kind": "succession", "scope": "althingi" },
+      { "from": "frjalslyndi", "date": "2013-04-27", "kind": "succession", "scope": "althingi" },
+      { "from": "sturla", "date": "2016-10-29", "kind": "defection", "scope": "althingi" },
+      { "from": "frjalslyndi", "date": "2014-05-31", "kind": "succession", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "2013": "images/dogun.jpg"
     }
@@ -385,6 +477,16 @@
     "id": "piratar",
     "name": "Píratar",
     "formed": 2012,
+    "origins": [
+      { "from": "hreyfingin", "date": "2009", "kind": "defection", "scope": "althingi" },
+      {
+        "from": "vg",
+        "date": "2021-09-25",
+        "kind": "defection",
+        "scope": "althingi",
+        "description": "Andrés Ingi Jónsson gegnur úr VG og til liðs við Pírata."
+      }
+    ],
     "logos": {
       "2013": "images/Piratar1.png",
       "2021": "images/Piratar2.png",
@@ -395,6 +497,11 @@
     "id": "bf",
     "name": "Björt framtíð",
     "formed": 2012,
+    "origins": [
+      { "from": "framsokn", "date": "2013-04-27", "kind": "defection", "scope": "althingi" },
+      { "from": "besti", "date": "2014-05-31", "kind": "succession", "scope": "borgarstjorn" },
+      { "from": "framsokn", "date": "2014-05-31", "kind": "defection", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "2013": "images/bf.png"
     }
@@ -402,6 +509,10 @@
   {
     "id": "regnboginn",
     "name": "Regnboginn",
+    "origins": [
+      { "from": "framsokn", "date": "2013-04-27", "kind": "defection", "scope": "althingi" },
+      { "from": "vg", "date": "2013-04-27", "kind": "defection", "scope": "althingi" }
+    ],
     "logos": {
       "2013": "images/regnboginn.png"
     }
@@ -409,6 +520,10 @@
   {
     "id": "althydufylking",
     "name": "Alþýðufylkingin",
+    "origins": [
+      { "from": "vg", "date": "2013-04-27", "kind": "defection", "scope": "althingi" },
+      { "from": "vg", "date": "2014-05-31", "kind": "defection", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "2013": "images/althydufylkingin.png"
     }
@@ -437,6 +552,11 @@
   {
     "id": "islthj",
     "name": "Íslenska þjóðfylkingin",
+    "origins": [
+      { "from": "hg", "date": "2016-10-29", "kind": "succession", "scope": "althingi" },
+      { "from": "sjalfstaedisflokkur", "date": "2016-10-29", "kind": "defection", "scope": "althingi" },
+      { "from": "sjalfstaedisflokkur", "date": "2018-05-26", "kind": "defection", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "2016": "images/islthjod.jpg"
     }
@@ -445,6 +565,10 @@
     "id": "vidreisn",
     "name": "Viðreisn",
     "formed": 2016,
+    "origins": [
+      { "from": "sjalfstaedisflokkur", "date": "2016-10-29", "kind": "defection", "scope": "althingi" },
+      { "from": "sjalfstaedisflokkur", "date": "2018-05-26", "kind": "defection", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "2016": "images/vidreisn.png",
       "2021": "images/vidreisn2.png"
@@ -454,6 +578,22 @@
     "id": "flfolksins",
     "name": "Flokkur fólksins",
     "formed": 2016,
+    "origins": [
+      {
+        "from": "dogun",
+        "date": "2021-09-25",
+        "kind": "defection",
+        "scope": "althingi",
+        "description": "Dögun er lögð niður og formaður Dögunar, Helga Þórðardóttir, gegnur í Flokk fólksins."
+      },
+      {
+        "from": "vg",
+        "date": "2024-11-30",
+        "kind": "defection",
+        "scope": "althingi",
+        "description": "Lilja Rafney Magnúsdóttir gengur úr Vinstri grænum og til liðs við Flokk fólksins."
+      }
+    ],
     "logos": {
       "2016": "images/flfolksins1.png",
       "2018": "images/flfolksins1_5.png",
@@ -464,6 +604,23 @@
     "id": "midflokkur",
     "name": "Miðflokkurinn",
     "formed": 2017,
+    "origins": [
+      {
+        "from": "framsokn",
+        "date": "2017-10-28",
+        "kind": "defection",
+        "scope": "althingi",
+        "description": "Sigmundur Davíð Gunnlaugsson gengur úr Framsókn og stofnar Miðflokkinn."
+      },
+      {
+        "from": "flfolksins",
+        "date": "2021-09-25",
+        "kind": "defection",
+        "scope": "althingi",
+        "description": "Karl Gauti Hjaltason og Ólafur Ísleifsson eru reknir úr Flokki fólksins og ganga í Miðflokkinn."
+      },
+      { "from": "framsokn", "date": "2018-05-26", "kind": "defection", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "2017": "images/midflokkur1.png",
       "2021": "images/midflokkur2.png"
@@ -473,6 +630,16 @@
     "id": "sosialistafl",
     "name": "Sósíalistaflokkur Íslands",
     "formed": 2017,
+    "origins": [
+      {
+        "from": "althydufylking",
+        "date": "2021-09-25",
+        "kind": "defection",
+        "scope": "althingi",
+        "description": "Þorvarldur Þorvaldsson og Vésteinn Valgarðsson, lykilaðilar í Alþýðufylkingunni, skrá sig í Sósíalistaflokkinn."
+      },
+      { "from": "althydufylking", "date": "2022-05-14", "kind": "defection", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "2017": "images/sosialistar2.png"
     }
@@ -481,6 +648,9 @@
     "id": "bo2018",
     "name": "Borgin okkar",
     "formed": 2018,
+    "origins": [
+      { "from": "framsokn", "date": "2018-05-26", "kind": "defection", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "2018": "images/bo2018.jpg"
     }
@@ -534,6 +704,15 @@
   {
     "id": "lydraedisfl",
     "name": "Lýðræðisflokkurinn",
+    "origins": [
+      {
+        "from": "sjalfstaedisflokkur",
+        "date": "2024-11-30",
+        "kind": "defection",
+        "scope": "althingi",
+        "description": "Arnar Þór Jónsson gengur úr Sjálfstæðisflokkun og stofnar Lýðræðisflokkinn."
+      }
+    ],
     "logos": {
       "2024": "images/lydraedisfl.png"
     }
@@ -541,6 +720,15 @@
   {
     "id": "frjalydfl",
     "name": "Frjálslyndi lýðræðisflokkurinn",
+    "origins": [
+      {
+        "from": "sjalfstaedisflokkur",
+        "date": "2021-09-25",
+        "kind": "defection",
+        "scope": "althingi",
+        "description": "Guðmundur Franklín Jónsson gengur úr Sjálfstæðisflokknum og stofnar Frjálslynda lýðræðisflokkinn."
+      }
+    ],
     "logos": {
       "2021": "images/frjalydfl.png"
     }
@@ -548,6 +736,10 @@
   {
     "id": "vinstrid",
     "name": "Vinstrið",
+    "origins": [
+      { "from": "sosialistafl", "date": "2026-05-16", "kind": "defection", "scope": "borgarstjorn" },
+      { "from": "vg", "date": "2026-05-16", "kind": "succession", "scope": "borgarstjorn" }
+    ],
     "logos": {
       "2026": "images/vinstrid.png"
     }
@@ -569,7 +761,9 @@
   {
     "id": "samtok",
     "name": "Samtök um jafnrétti og félagshyggju",
-    "splitFrom": [ "framsokn" ]
+    "origins": [
+      { "from": "framsokn", "date": "1987-04-25", "kind": "defection", "scope": "althingi" }
+    ]
   },
   {
     "id": "althyduflokkurinn+kommunistar",
@@ -605,5 +799,23 @@
   {
     "id": "vhs",
     "name": "Vinstri hægri snú"
+  },
+  {
+    "id": "group1971",
+    "type": "group",
+    "formed": 1971,
+    "origins": [
+      { "from": "bandalag", "date": "1971", "kind": "defection", "scope": "althingi" }
+    ],
+    "note": "Not a party. Placed between the 1971 and 1974 elections; the exact date is not known."
+  },
+  {
+    "id": "hreyfingin",
+    "type": "group",
+    "name": "Hreyfingin",
+    "formed": 2009,
+    "origins": [
+      { "from": "borgarahr", "date": "2009", "kind": "defection", "scope": "althingi" }
+    ]
   }
 ]
