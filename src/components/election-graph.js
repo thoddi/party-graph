@@ -1,6 +1,7 @@
 import PartyData from '../services/party-data.js';
 import PartyOrderer from '../services/party-orderer.js';
 import { normalizeElections } from '../services/election-data.js';
+import { buildGraph } from '../services/graph-model.js';
 import './election-column.js';
 import './connection-layer.js';
 import './party-group.js';
@@ -154,7 +155,7 @@ class ElectionGraph extends HTMLElement {
 
     this._currentType = 'althingi';
     this._electionData = { althingi: null, borgarstjorn: null };
-    this._groups = [];
+    this._graphs = { althingi: null, borgarstjorn: null };
     this._partyOrder = null;
     this._lastOrder = null;
   }
@@ -162,9 +163,6 @@ class ElectionGraph extends HTMLElement {
   async connectedCallback() {
     await PartyData.load();
     await this._loadPartyOrder();
-
-    const groupsObj = await this._loadJson('groups.json');
-    this._groups = groupsObj.groups || [];
 
     await this._loadElectionData('althingi');
     await this._loadElectionData('borgarstjorn');
@@ -195,8 +193,9 @@ class ElectionGraph extends HTMLElement {
   async _loadElectionData(type) {
     const file = type === 'althingi' ? 'data.json' : 'borgarstjorn_data.json';
     const data = await this._loadJson(file);
-    data.groups = this._groups;
     this._electionData[type] = normalizeElections(data);
+    this._graphs[type] = buildGraph(data, PartyData.partiesById, type);
+    for (const warning of this._graphs[type].warnings) console.warn(`${file}: ${warning}`);
   }
 
   get _data() {
@@ -223,11 +222,15 @@ class ElectionGraph extends HTMLElement {
     });
   }
 
+  get _graph() {
+    return this._graphs[this._currentType];
+  }
+
   _drawConnections() {
-    const data = this._data;
-    if (!data) return;
+    const graph = this._graph;
+    if (!graph) return;
     const columns = Array.from(this._columnsEl.querySelectorAll('election-column'));
-    this._connectionLayer.draw(data, columns, this._mainContent);
+    this._connectionLayer.draw(graph, columns, this._mainContent);
   }
 
   _setupTabs() {
@@ -275,7 +278,7 @@ class ElectionGraph extends HTMLElement {
       if (algo === 'barycenter') {
         order = PartyOrderer.computeBarycenterOrder(data);
       } else if (algo === 'greedy') {
-        order = PartyOrderer.computeFutureAwareOrder(data);
+        order = PartyOrderer.computeFutureAwareOrder(data, this._graph);
       } else {
         order = PartyOrderer.computeBarycenterOrder(data);
       }

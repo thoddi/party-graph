@@ -19,7 +19,11 @@ class PartyOrderer {
     return orders;
   }
 
-  static computeFutureAwareOrder(data) {
+  /**
+   * @param {Object} data  the election data
+   * @param {Object} graph the graph model for the same tab (see graph-model.js)
+   */
+  static computeFutureAwareOrder(data, graph) {
     const partyRowMap = {};
     data.elections.forEach((election) => {
       election.parties.forEach((p, idx) => {
@@ -27,28 +31,20 @@ class PartyOrderer {
       });
     });
 
+    // Parties in the next column that this party is joined to: by a line (a continuation
+    // is also a line), or through a group node.
     function getFutureConnections(key, partyId) {
       const currIdx = data.elections.findIndex(e => e.key === key);
       const nextIdx = currIdx + 1;
       if (currIdx < 0 || nextIdx >= data.elections.length) return [];
-      const year = data.elections[currIdx].year;
       const nextKey = data.elections[nextIdx].key;
-      const direct = (data.connections || [])
-        .filter(c => String(c.from.year) === key && c.from.partyId === partyId && String(c.to.year) === nextKey)
-        .map(c => c.to.partyId);
-      let groupSplits = [];
-      if (data.groups) {
-        data.groups.forEach(g => {
-          if (Math.floor(g.year) === year && g.members.includes(partyId)) {
-            groupSplits = groupSplits.concat(g.splitsTo);
-          }
-        });
-      }
-      const nextElection = data.elections[nextIdx];
-      const continues = nextElection.parties
-        .filter(p => p && p.id === partyId)
-        .map(p => p.id);
-      return [...direct, ...groupSplits, ...continues];
+      const direct = graph.edges
+        .filter(e => e.fromKey === key && e.fromId === partyId && e.toKey === nextKey)
+        .map(e => e.toId);
+      const viaNodes = graph.nodes
+        .filter(n => n.prevKey === key && n.nextKey === nextKey && n.sources.some(s => s.id === partyId))
+        .flatMap(n => n.targets.map(t => t.id));
+      return [...direct, ...viaNodes];
     }
 
     const orders = [];
