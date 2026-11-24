@@ -16,6 +16,22 @@ template.innerHTML = `
       cursor: pointer;
       pointer-events: stroke;
     }
+    .line {
+      fill: none;
+      stroke: var(--line-color, #333);
+      stroke-width: 2;
+      stroke-linejoin: round;
+      transition: opacity 0.15s;
+    }
+    .node {
+      fill: #d22;
+      stroke: var(--line-color, #333);
+      stroke-width: 2;
+      transition: opacity 0.15s;
+    }
+    .node-label { transition: opacity 0.15s; }
+    .dim { opacity: 0.12; }
+    .hl.line { stroke-width: 3.5; }
   </style>
   <svg></svg>
 `;
@@ -40,6 +56,8 @@ class ConnectionLayer extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     this._svg = this.shadowRoot.querySelector('svg');
     this._popover = null;
+    this._edgeEls = [];   // the line of each edge, by index in graph.edges
+    this._nodeEls = [];   // per group node: its circle, label and lines
   }
 
   connectedCallback() {
@@ -77,6 +95,8 @@ class ConnectionLayer extends HTMLElement {
    */
   draw(graph, columnElements, container, layout) {
     this._svg.innerHTML = '';
+    this._edgeEls = [];
+    this._nodeEls = [];
     if (!graph || !columnElements || !container) return;
 
     const containerRect = container.getBoundingClientRect();
@@ -101,7 +121,7 @@ class ConnectionLayer extends HTMLElement {
         return { x: rect.left - containerRect.left + rect.width / 2, y: rect.top - containerRect.top + column.rowCenterY(row) };
       });
       const path = [this._getBoxCenter(fromBox, containerRect), ...via, this._getBoxCenter(toBox, containerRect)];
-      this._drawPath(path, edge.kind === 'defection');
+      this._edgeEls[i] = this._drawPath(path, edge.kind === 'defection');
       if (edge.description) this._drawHitPath(path, edge.description);
     });
 
@@ -135,16 +155,14 @@ class ConnectionLayer extends HTMLElement {
   _drawPath(points, dashed) {
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
     line.setAttribute('points', points.map(p => `${p.x},${p.y}`).join(' '));
-    line.setAttribute('fill', 'none');
-    line.setAttribute('stroke', '#333');
-    line.setAttribute('stroke-width', '2');
-    line.setAttribute('stroke-linejoin', 'round');
+    line.classList.add('line');
     if (dashed) line.setAttribute('stroke-dasharray', '6,4');
     this._svg.appendChild(line);
+    return line;
   }
 
   _drawLine(from, to, dashed) {
-    this._drawPath([from, to], dashed);
+    return this._drawPath([from, to], dashed);
   }
 
   /** A wide transparent line on top of a real one, to show `description` on hover. */
@@ -164,7 +182,7 @@ class ConnectionLayer extends HTMLElement {
   _drawNodes(graph, columnElements, partyBoxes, containerRect) {
     const colIndex = key => graph.elections.findIndex(e => e.key === key);
 
-    graph.nodes.forEach(node => {
+    graph.nodes.forEach((node, nodeIndex) => {
       const prevCol = columnElements[colIndex(node.prevKey)];
       const nextCol = columnElements[colIndex(node.nextKey)];
       if (!prevCol || !nextCol) return;
@@ -188,18 +206,19 @@ class ConnectionLayer extends HTMLElement {
       const r = 18;
       const here = { x, y };
 
-      sources.forEach(({ leg, pos }) => this._drawLine(pos, here, leg.kind === 'defection'));
-      targets.forEach(({ leg, pos }) => this._drawLine(here, pos, leg.kind === 'defection'));
+      const entry = { sources: {}, targets: {}, circle: null, label: null };
+      sources.forEach(({ leg, pos }) => { entry.sources[node.sources.indexOf(leg)] = this._drawLine(pos, here, leg.kind === 'defection'); });
+      targets.forEach(({ leg, pos }) => { entry.targets[node.targets.indexOf(leg)] = this._drawLine(here, pos, leg.kind === 'defection'); });
+      this._nodeEls[nodeIndex] = entry;
 
       // Node circle
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       circle.setAttribute('cx', x);
       circle.setAttribute('cy', y);
       circle.setAttribute('r', r);
-      circle.setAttribute('fill', '#d22');
-      circle.setAttribute('stroke', '#333');
-      circle.setAttribute('stroke-width', '2');
+      circle.classList.add('node');
       this._svg.appendChild(circle);
+      entry.circle = circle;
 
       // Node label
       if (node.label) {
@@ -209,9 +228,31 @@ class ConnectionLayer extends HTMLElement {
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('font-size', '14px');
         text.textContent = node.label;
+        text.classList.add('node-label');
         this._svg.appendChild(text);
+        entry.label = text;
       }
     });
+  }
+
+  /**
+   * Highlight what selectionFor() (services/graph-model.js) picked and dim the rest, or with
+   * null clear it. Only CSS classes change, so nothing is redrawn.
+   */
+  highlight(selection) {
+    const all = [...this._edgeEls, ...this._nodeEls.flatMap(n => n ? [...Object.values(n.sources), ...Object.values(n.targets), n.circle, n.label] : [])];
+    for (const el of all) el?.classList.remove('dim', 'hl');
+    if (!selection) return;
+    for (const el of all) el?.classList.add('dim');
+    const on = el => el?.classList.remove('dim'), mark = el => { on(el); el?.classList.add('hl'); };
+    selection.edges.forEach(i => mark(this._edgeEls[i]));
+    for (const { index, sources, targets } of selection.nodes) {
+      const entry = this._nodeEls[index];
+      if (!entry) continue;
+      on(entry.circle); on(entry.label);
+      sources.forEach(j => mark(entry.sources[j]));
+      targets.forEach(j => mark(entry.targets[j]));
+    }
   }
 
   _showPopover(text, evt) {

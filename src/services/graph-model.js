@@ -88,24 +88,24 @@ function collectAppearances(elections, partiesById) {
  * @param {{elections: object[]}} data    normalised election data for one tab
  * @param {Object<string, object>} partiesById
  * @param {string} tab                    "althingi" or "borgarstjorn"
- * @returns {{elections: object[], edges: object[], nodes: object[], warnings: string[]}}
+ * @returns {{elections: object[], edges: object[], nodes: object[], appearances: Map, warnings: string[]}}
  */
 export function buildGraph(data, partiesById, tab) {
   const elections = data.elections;
   const warnings = [];
   const appearances = collectAppearances(elections, partiesById);
   const edges = new Map();           // "fromKey|fromCard|toKey|toCard" -> edge
-  const addEdge = (from, to, kind, description, explicit) => {
+  const addEdge = (from, to, kind, description, explicit, fromParty, toParty) => {
     if (from.col >= to.col) return;
     const id = `${from.key}|${from.cardId}|${to.key}|${to.cardId}`;
     const old = edges.get(id);
     if (old && (old.explicit || !explicit)) return;
-    edges.set(id, { fromKey: from.key, fromId: from.cardId, toKey: to.key, toId: to.cardId, kind, description, explicit });
+    edges.set(id, { fromKey: from.key, fromId: from.cardId, toKey: to.key, toId: to.cardId, fromParty, toParty, kind, description, explicit });
   };
 
   // continuation lines
-  for (const list of appearances.values()) {
-    for (let i = 1; i < list.length; i++) addEdge(list[i - 1], list[i], KINDS.succession, undefined, false);
+  for (const [partyId, list] of appearances) {
+    for (let i = 1; i < list.length; i++) addEdge(list[i - 1], list[i], KINDS.succession, undefined, false, partyId, partyId);
   }
 
   // origin lines and groups
@@ -119,11 +119,11 @@ export function buildGraph(data, partiesById, tab) {
       const date = sortableDate(origin.date);
       const from = (appearances.get(origin.from) ?? []).filter(a => a.date < date).pop();
       const to = (appearances.get(partyId) ?? []).find(a => a.date >= date);
-      if (from && to) addEdge(from, to, origin.kind, origin.description, true);
+      if (from && to) addEdge(from, to, origin.kind, origin.description, true, origin.from, partyId);
     }
   }
 
-  return { elections, edges: [...edges.values()], nodes: buildNodes(groups, partiesById, elections, appearances, tab), warnings };
+  return { elections, edges: [...edges.values()], nodes: buildNodes(groups, partiesById, elections, appearances, tab), appearances, warnings };
 }
 
 /**
@@ -146,18 +146,58 @@ function buildNodes(groups, partiesById, elections, appearances, tab) {
     for (const origin of group.origins ?? []) {
       if (!appliesTo(origin, tab)) continue;
       const a = at(origin.from, prev);
-      if (a) sources.push({ key: a.key, id: a.cardId, kind: origin.kind });
+      if (a) sources.push({ key: a.key, id: a.cardId, party: origin.from, kind: origin.kind });
     }
     const targets = [];
     for (const [partyId, party] of Object.entries(partiesById)) {
       for (const origin of party.origins ?? []) {
         if (origin.from !== group.id || !appliesTo(origin, tab)) continue;
         const a = at(partyId, next);
-        if (a) targets.push({ key: a.key, id: a.cardId, kind: origin.kind });
+        if (a) targets.push({ key: a.key, id: a.cardId, party: partyId, kind: origin.kind });
       }
     }
     if (!sources.length || !targets.length) continue;
     nodes.push({ id: group.id, label: group.name ?? '', prevKey: elections[prev].key, nextKey: elections[next].key, sources, targets });
   }
   return nodes;
+}
+
+/** Key of a card, the same one the components use to find it: "<election key>-<card id>". */
+export const cardKey = (electionKey, cardId) => `${electionKey}-${cardId}`;
+
+/**
+ * What to highlight when a party is picked, in the terms of the graph from buildGraph():
+ *
+ *   cards    keys of every card the party is on, joint lists it ran on included
+ *   related  keys of the cards at the other end of its origin lines (where it came from,
+ *            what it became), one step only
+ *   edges    indexes into graph.edges: its own continuation lines and its origin lines
+ *   nodes    for each group node, which of its lines (`sources`/`targets`, by index) are the party's
+ *
+ * Returns null when the party is not in this tab.
+ */
+export function selectionFor(graph, partyId) {
+  const own = graph.appearances?.get(partyId) ?? [];
+  const cards = new Set(own.map(a => cardKey(a.key, a.cardId)));
+  const related = new Set();
+  const edges = [];
+  graph.edges.forEach((e, i) => {
+    if (e.fromParty !== partyId && e.toParty !== partyId) return;
+    edges.push(i);
+    for (const k of [cardKey(e.fromKey, e.fromId), cardKey(e.toKey, e.toId)]) if (!cards.has(k)) related.add(k);
+  });
+  const nodes = [];
+  graph.nodes.forEach((node, i) => {
+    const sources = [], targets = [];
+    node.sources.forEach((leg, j) => { if (leg.party === partyId) sources.push(j); });
+    node.targets.forEach((leg, j) => { if (leg.party === partyId) targets.push(j); });
+    if (!sources.length && !targets.length && node.id !== partyId) return;
+    nodes.push({ index: i, sources, targets });
+    // the other side of the group is what the party split from or became
+    const legs = [...node.sources.filter((_, j) => sources.includes(j) || targets.length),
+                  ...node.targets.filter((_, j) => targets.includes(j) || sources.length)];
+    for (const leg of legs) { const k = cardKey(leg.key, leg.id); if (!cards.has(k)) related.add(k); }
+  });
+  if (!cards.size && !edges.length && !nodes.length) return null;
+  return { partyId, cards, related, edges, nodes };
 }

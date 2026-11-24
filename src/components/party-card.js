@@ -16,7 +16,23 @@ template.innerHTML = `
       text-align: center;
       background: #fff;
       box-sizing: border-box;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, opacity 0.15s;
+      cursor: pointer;
+    }
+    :host(:focus-visible) {
+      outline: 3px solid #05c;
+      outline-offset: 3px;
+    }
+    :host([highlighted]) {
+      outline: 3px solid #333;
+      outline-offset: 2px;
+    }
+    :host([related]) {
+      outline: 2px dashed #333;
+      outline-offset: 2px;
+    }
+    :host([dimmed]) {
+      opacity: 0.3;
     }
     :host(.elected-false) {
       border-color: #e22;
@@ -29,6 +45,7 @@ template.innerHTML = `
       background: none;
       box-shadow: none;
       pointer-events: none;
+      cursor: default;
     }
     img {
       max-width: 80px;
@@ -52,7 +69,7 @@ template.innerHTML = `
 
 class PartyCard extends HTMLElement {
   static get observedAttributes() {
-    return ['party-id', 'year', 'votes', 'elected', 'government', 'empty'];
+    return ['party-id', 'year', 'votes', 'elected', 'government', 'empty', 'highlighted'];
   }
 
   constructor() {
@@ -79,6 +96,9 @@ class PartyCard extends HTMLElement {
       this._img.hidden = true;
       this._nameEl.textContent = '';
       this._votesEl.textContent = '';
+      this.removeAttribute('tabindex');
+      this.removeAttribute('role');
+      this.removeAttribute('aria-label');
       return;
     }
     this.classList.remove('empty');
@@ -105,6 +125,16 @@ class PartyCard extends HTMLElement {
 
     this._nameEl.textContent = displayName;
     this._votesEl.textContent = votes ? `${votes}%` : '';
+
+    // keyboard and screen readers: one focusable button per card
+    this.tabIndex = 0;
+    this.setAttribute('role', 'button');
+    this.setAttribute('aria-pressed', this.hasAttribute('highlighted') ? 'true' : 'false');
+    this.setAttribute('aria-label', [
+      name, year, votes ? `${votes}%` : '',
+      elected ? '' : 'ekki kjörinn',
+      government ? 'í ríkisstjórn' : '',
+    ].filter(Boolean).join(', '));
   }
 }
 
