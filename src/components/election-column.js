@@ -1,5 +1,5 @@
 import './party-card.js';
-import { CARD_SIZE, ROW_GAP, ROW_PITCH } from '../services/layout.js';
+import { CARD_SIZE, ROW_GAP, rowCenter } from '../services/layout.js';
 import { governmentMembership } from '../services/election-data.js';
 
 const template = document.createElement('template');
@@ -9,18 +9,25 @@ template.innerHTML = `
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 0 40px;
+      margin: 0 var(--col-gap, 40px);
     }
+    /* stays at the top of the screen while the graph is scrolled down */
     .year-label {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      align-self: stretch;
+      padding: 6px 0;
+      margin-bottom: 4px;
+      background: var(--bg);
       font-weight: bold;
       text-align: center;
-      margin-bottom: 10px;
       font-size: 16px;
     }
     .parties {
       display: grid;
-      grid-template-columns: ${CARD_SIZE}px;
-      gap: ${ROW_GAP}px;
+      grid-template-columns: var(--card-size, ${CARD_SIZE}px);
+      gap: var(--row-gap, ${ROW_GAP}px);
     }
   </style>
   <div class="year-label" part="year-label"></div>
@@ -86,7 +93,8 @@ class ElectionColumn extends HTMLElement {
   /** Vertical centre of a row, relative to the top of this column element. */
   rowCenterY(row) {
     const top = this._partiesContainer.getBoundingClientRect().top - this.getBoundingClientRect().top;
-    return top + row * ROW_PITCH + CARD_SIZE / 2;
+    const style = getComputedStyle(this._partiesContainer);   // the real size: it changes with the screen
+    return top + rowCenter(row, parseFloat(style.gridTemplateColumns) || undefined, parseFloat(style.rowGap) || undefined);
   }
 
   get parties() {
@@ -100,7 +108,7 @@ class ElectionColumn extends HTMLElement {
   _renderParties() {
     this._partiesContainer.innerHTML = '';
     this._partiesContainer.style.gridTemplateRows = this._rowCount
-      ? `repeat(${this._rowCount}, ${CARD_SIZE}px)` : '';
+      ? `repeat(${this._rowCount}, var(--card-size, ${CARD_SIZE}px))` : '';
     const year = this.getAttribute('year');
 
     this._parties.forEach(party => {
@@ -127,7 +135,8 @@ class ElectionColumn extends HTMLElement {
   }
 
   getPartyCardById(partyId) {
-    return this._partiesContainer.querySelector(`#party-${this.electionKey}-${partyId}`);
+    // an attribute selector: ids such as "a+b" are not valid after a #
+    return this._partiesContainer.querySelector(`[id="${CSS.escape(`party-${this.electionKey}-${partyId}`)}"]`);
   }
 }
 

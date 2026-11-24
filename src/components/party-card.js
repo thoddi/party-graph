@@ -9,8 +9,8 @@ template.innerHTML = `
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      width: 120px;
-      height: 120px;
+      width: var(--card-size, 120px);
+      height: var(--card-size, 120px);
       border: 2px solid var(--border-strong);
       border-radius: 18px;
       padding: 8px;
@@ -21,6 +21,7 @@ template.innerHTML = `
       transition: border-color 0.2s, opacity 0.15s;
       cursor: pointer;
       position: relative;
+      scroll-margin-top: 72px;   /* clears the sticky year labels when scrolled to */
     }
     :host(:focus-visible) {
       outline: 3px solid var(--accent);
@@ -69,20 +70,30 @@ template.innerHTML = `
       cursor: default;
     }
     img {
-      max-width: 60px;
-      max-height: 60px;
+      max-width: calc(var(--card-size, 120px) * 0.5);
+      max-height: calc(var(--card-size, 120px) * 0.5);
       display: block;
       margin: 0 auto 4px;
       background: var(--logo-bg);
       border-radius: 6px;
     }
     .name {
+      max-width: 100%;
       font-size: 12px;
       line-height: 1.2;
+      overflow-wrap: anywhere;   /* a long name breaks inside the card instead of spilling out */
+      hyphens: auto;
     }
     .votes {
       font-size: 11px;
       color: var(--muted);
+    }
+    @media (max-width: 700px) {
+      :host { padding: 4px; border-radius: 14px; }
+      img { max-width: calc(var(--card-size, 120px) * 0.42); max-height: calc(var(--card-size, 120px) * 0.42); margin-bottom: 2px; }
+      .name { font-size: 10.5px; }
+      .votes { font-size: 10px; }
+      .gov i { width: 12px; }
     }
   </style>
   <img part="logo" hidden>
