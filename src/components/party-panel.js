@@ -58,6 +58,8 @@ template.innerHTML = `
   </div>
 `;
 
+import { governmentPhrase } from '../services/datasets.js';
+
 const TAB_TITLES = { althingi: 'Alþingiskosningar', borgarstjorn: 'Borgarstjórnarkosningar' };
 const KIND_TEXT = { succession: 'framhald', defection: 'hluti fór' };
 const SVG = 'http://www.w3.org/2000/svg';
@@ -128,7 +130,7 @@ class PartyPanel extends HTMLElement {
       if (!rows.length) continue;
       out.push(el('h3', `${TAB_TITLES[tab] ?? tab} (${rows.length})`));
       out.push(this._spark(rows));
-      out.push(this._table(rows));
+      out.push(this._table(rows, tab));
     }
     return out;
   }
@@ -179,14 +181,17 @@ class PartyPanel extends HTMLElement {
     return svg;
   }
 
-  _table(rows) {
+  _table(rows, tab) {
     const table = el('table');
     const head = el('tr');
     for (const [t, cls] of [['Kosning'], ['Fylgi', 'num'], ['Staða']]) { const th = el('th', t, cls); th.scope = 'col'; head.append(th); }
     table.append(head);
     for (const r of rows) {
       const tr = el('tr');
-      const status = [r.elected ? 'Kjörinn' : 'Ekki kjörinn', r.government ? 'í ríkisstjórn' : null].filter(Boolean).join(', ');
+      const { in: inCount, total, names } = r.governments;
+      let gov = governmentPhrase(tab, inCount, total);
+      if (gov && names.length) gov += ` (${names.join(', ')})`;
+      const status = [r.elected ? 'Kjörinn' : 'Ekki kjörinn', gov].filter(Boolean).join(', ');
       tr.append(
         el('td', r.label),
         el('td', r.votes != null ? `${r.votes}%` : '–', 'num'),

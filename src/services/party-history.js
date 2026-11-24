@@ -1,3 +1,5 @@
+import { governmentMembership } from './election-data.js';
+
 /**
  * PartyHistory — everything the detail panel shows about one party, worked out from the
  * party metadata and the election files. It has no DOM code.
@@ -12,7 +14,9 @@
  *   origins     where it came from: [{ id, name, date, kind, scope, description }]
  *   successors  parties that list this one as an origin: same shape
  *   results     per tab, one row per election it ran in:
- *                 { key, label, year, votes, elected, government, via }
+ *                 { key, label, year, votes, elected, government, governments, via }
+ *               `governments` is { total, in, names }: how many governments sat, how many it was
+ *               in, and the names of those it was in
  *               `via` is the name of the joint list when it ran as a member of one
  */
 export function partyHistory(partyId, partiesById, datasets) {
@@ -50,10 +54,21 @@ export function partyHistory(partyId, partiesById, datasets) {
         votes: entry.votes ?? null,
         elected: entry.elected !== false,
         government: !!entry.government,
+        governments: governmentsOf(election, entry.id),
         via: joint ? nameOf(joint.id) : null,
       });
     }
   }
 
   return { id: partyId, name: party.name ?? partyId, type: party.type ?? 'party', formed: party.formed ?? null, disbanded: party.disbanded ?? null, note: party.note ?? null, logos, origins, successors, results };
+}
+
+function governmentsOf(election, id) {
+  const mask = governmentMembership(election, id);
+  const list = election.governments ?? [];
+  return {
+    total: mask.length,
+    in: mask.filter(Boolean).length,
+    names: list.filter((g, i) => mask[i] && g.name).map(g => g.name),
+  };
 }

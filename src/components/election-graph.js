@@ -3,7 +3,7 @@ import { normalizeElections } from '../services/election-data.js';
 import { buildGraph, selectionFor, cardKey } from '../services/graph-model.js';
 import { partyHistory } from '../services/party-history.js';
 import { layoutGraph } from '../services/layout.js';
-import { DATASETS, describeElections } from '../services/datasets.js';
+import { DATASETS, GOVERNMENT_TEXT, describeElections } from '../services/datasets.js';
 import './election-column.js';
 import './connection-layer.js';
 import './party-group.js';
@@ -73,6 +73,22 @@ template.innerHTML = `
       .seg { flex: 1 1 0; padding: 8px 10px; }
       .seg-sub { font-size: 11px; }
     }
+    .legend { margin: 0 0 20px; font-size: 13px; color: var(--muted); }
+    .legend summary { cursor: pointer; width: max-content; padding: 2px 0; }
+    .legend summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .legend ul { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 8px 0 0; padding: 0; list-style: none; }
+    .legend li { display: flex; align-items: center; gap: 8px; }
+    .legend li[hidden] { display: none; }
+    .legend li > span:first-child { flex: none; display: inline-flex; gap: 3px; align-items: center; justify-content: center; min-width: 30px; }
+    .sw-card { width: 24px; height: 17px; border: 2px solid var(--border-strong); border-radius: 6px; background: var(--surface); }
+    .sw-notelected { border: 2px dashed var(--not-elected); }
+    .sw-selected { outline: 2px solid var(--fg); outline-offset: 1px; }
+    .sw-related { outline: 2px dashed var(--fg); outline-offset: 1px; }
+    .sw-seg { width: 14px; height: 6px; border: 1.5px solid var(--gov-bar); border-radius: 3px; }
+    .sw-seg.in { background: var(--gov-bar); }
+    .sw-line { width: 28px; border-top: 2px solid var(--line); }
+    .sw-line.dashed { border-top-style: dashed; }
+    .sw-node { width: 15px; height: 15px; border: 2px solid var(--line); border-radius: 50%; background: var(--node); }
     .main-content {
       position: relative;
       min-height: 600px;
@@ -108,6 +124,20 @@ template.innerHTML = `
       <span class="seg-title">Borgarstjórn</span><span class="seg-sub"></span>
     </button>
   </div>
+
+  <details class="legend" id="legend">
+    <summary>Skýringar</summary>
+    <ul>
+      <li id="legend-gov"><span aria-hidden="true"><i class="sw-seg in"></i></span><span id="legend-gov-text"></span></li>
+      <li id="legend-multi" hidden><span aria-hidden="true"><i class="sw-seg in"></i><i class="sw-seg"></i></span><span id="legend-multi-text"></span></li>
+      <li><span aria-hidden="true"><i class="sw-card sw-notelected"></i></span>Ekki kjörinn</li>
+      <li><span aria-hidden="true"><i class="sw-line"></i></span>Flokkurinn heldur áfram</li>
+      <li><span aria-hidden="true"><i class="sw-line dashed"></i></span>Hluti flokksins fór</li>
+      <li><span aria-hidden="true"><i class="sw-node"></i></span>Klofningur eða sameining</li>
+      <li><span aria-hidden="true"><i class="sw-card sw-selected"></i></span>Valinn flokkur</li>
+      <li><span aria-hidden="true"><i class="sw-card sw-related"></i></span>Tengdur flokkur</li>
+    </ul>
+  </details>
 
   <div class="main-content" id="main-content" role="tabpanel">
     <connection-layer id="connections"></connection-layer>
@@ -313,6 +343,8 @@ class ElectionGraph extends HTMLElement {
       col.setAttribute('year', election.year);
       col.setAttribute('label', election.label);
       col.setAttribute('election-key', election.key);
+      col.setAttribute('kind', this._currentType);
+      col.election = election;
       col.parties = election.parties;
       col.setLayout(layout.rows[i], layout.rowCount);
       this._columnsEl.appendChild(col);
@@ -369,6 +401,17 @@ class ElectionGraph extends HTMLElement {
       tab.tabIndex = on ? 0 : -1;   // one tab stop; the arrow keys move between the tabs
     }
     this._mainContent.setAttribute('aria-labelledby', `tab-${this._currentType}`);
+    this._syncLegend();
+  }
+
+  /** The legend uses the words of the current view (ríkisstjórn or meirihluti). */
+  _syncLegend() {
+    const words = GOVERNMENT_TEXT[this._currentType];
+    const $ = id => this.shadowRoot.getElementById(id);
+    $('legend-gov-text').textContent = `Sat ${words.single}`;
+    const many = (this._data?.elections ?? []).some(e => e.governments.length > 1);
+    $('legend-multi').hidden = !many;
+    $('legend-multi-text').textContent = `Ein rönd fyrir hverja stjórn kjörtímabilsins; auð rönd: flokkurinn sat ekki í henni`;
   }
 
   /** "1923–2021 · 33 kosningar" under each tab name, from the data. */
@@ -381,6 +424,7 @@ class ElectionGraph extends HTMLElement {
 
   _setupTabs() {
     this._fillTabMeta();
+    this.shadowRoot.getElementById('legend').open = window.matchMedia('(min-width: 701px)').matches;
     this._syncTabs();
     const types = Object.keys(DATASETS);
     for (const type of types) {

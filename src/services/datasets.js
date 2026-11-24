@@ -12,3 +12,16 @@ export function describeElections(elections) {
   const span = first === last ? String(first) : `${first}–${last}`;
   return `${span} · ${elections.length} kosningar`;
 }
+
+/** Words for a government: the Alþingi has ríkisstjórn, the city council a meirihluti. */
+export const GOVERNMENT_TEXT = {
+  althingi: { single: 'í ríkisstjórn', plural: 'ríkisstjórnum', noun: 'Ríkisstjórn' },
+  borgarstjorn: { single: 'í meirihluta', plural: 'meirihlutum', noun: 'Meirihluti' },
+};
+
+/** "í ríkisstjórn", or "í 2 af 3 ríkisstjórnum kjörtímabilsins"; '' when it was in none. */
+export function governmentPhrase(type, inCount, total) {
+  const t = GOVERNMENT_TEXT[type] ?? GOVERNMENT_TEXT.althingi;
+  if (!inCount) return '';
+  return total <= 1 ? t.single : `í ${inCount} af ${total} ${t.plural} kjörtímabilsins`;
+}
