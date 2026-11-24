@@ -1,6 +1,6 @@
 import PartyData from '../services/party-data.js';
 import { normalizeElections } from '../services/election-data.js';
-import { buildGraph } from '../services/graph-model.js';
+import { buildGraph, selectionFor, cardKey } from '../services/graph-model.js';
 import { layoutGraph } from '../services/layout.js';
 import { DATASETS } from '../services/datasets.js';
 import './election-column.js';
@@ -87,6 +87,8 @@ class ElectionGraph extends HTMLElement {
     this._electionData = { althingi: null, borgarstjorn: null };
     this._graphs = { althingi: null, borgarstjorn: null };
     this._layouts = { althingi: null, borgarstjorn: null };   // computed when a tab is first shown
+    this._selected = null;   // party id kept by a click, tap or Enter
+    this._hovered = null;    // party id under the mouse; only a preview
   }
 
   async connectedCallback() {
@@ -99,6 +101,74 @@ class ElectionGraph extends HTMLElement {
     this._setupTabs();
 
     window.addEventListener('resize', () => this._drawConnections());
+    this._setupSelection();
+  }
+
+  /**
+   * Hover (mouse only) previews a party; click, tap or Enter/Space keeps it; Esc or a click
+   * on empty space clears it. One listener on the columns finds the card from the event path.
+   */
+  _setupSelection() {
+    const partyOf = evt => {
+      const card = evt.composedPath().find(el => el.localName === 'party-card');
+      return card && !card.hasAttribute('empty') ? card.getAttribute('party-id') : null;
+    };
+    const cols = this._columnsEl;
+    cols.addEventListener('pointerover', evt => {
+      if (evt.pointerType !== 'mouse') return;
+      this._setHovered(partyOf(evt));
+    });
+    cols.addEventListener('pointerleave', () => this._setHovered(null));
+    cols.addEventListener('focusin', evt => this._setHovered(partyOf(evt)));
+    cols.addEventListener('focusout', () => this._setHovered(null));
+    cols.addEventListener('click', evt => {
+      const id = partyOf(evt);
+      if (id) this._select(id === this._selected ? null : id);
+    });
+    cols.addEventListener('keydown', evt => {
+      if (evt.key !== 'Enter' && evt.key !== ' ') return;
+      const id = partyOf(evt);
+      if (!id) return;
+      evt.preventDefault();
+      this._select(id === this._selected ? null : id);
+    });
+    // a click that is not on a card or a line clears the selection
+    this._mainContent.addEventListener('click', evt => {
+      if (!partyOf(evt)) this._select(null);
+    });
+    document.addEventListener('keydown', evt => {
+      if (evt.key === 'Escape' && (this._selected || this._hovered)) { this._hovered = null; this._select(null); }
+    });
+  }
+
+  _setHovered(partyId) {
+    if (partyId === this._hovered) return;
+    this._hovered = partyId;
+    this._applySelection();
+  }
+
+  _select(partyId) {
+    this._selected = partyId;
+    this._applySelection();
+  }
+
+  /** Mark the cards and lines of the hovered party, or else the kept one; dim everything else. */
+  _applySelection() {
+    const graph = this._graph;
+    const selection = graph ? selectionFor(graph, this._hovered ?? this._selected) : null;
+    this._connectionLayer.highlight(selection);
+    const columns = this._columnsEl.querySelectorAll('election-column');
+    columns.forEach(col => {
+      for (const card of col.getPartyCardElements()) {
+        if (card.hasAttribute('empty')) continue;
+        const key = cardKey(col.electionKey, card.getAttribute('party-id'));
+        const on = !!selection?.cards.has(key);
+        card.toggleAttribute('highlighted', on);
+        card.setAttribute('aria-pressed', String(this._selected != null && card.getAttribute('party-id') === this._selected));
+        card.toggleAttribute('related', !!selection?.related.has(key));
+        card.toggleAttribute('dimmed', !!selection && !on && !selection.related.has(key));
+      }
+    });
   }
 
   async _loadJson(url) {
@@ -178,6 +248,7 @@ class ElectionGraph extends HTMLElement {
     if (!graph) return;
     const columns = Array.from(this._columnsEl.querySelectorAll('election-column'));
     this._connectionLayer.draw(graph, columns, this._mainContent, this._layout);
+    this._applySelection();
   }
 
   _setupTabs() {
@@ -186,6 +257,9 @@ class ElectionGraph extends HTMLElement {
 
     const setTab = (type) => {
       this._currentType = type;
+      // keep the selected party only if it is on this tab too
+      if (this._selected && !selectionFor(this._graphs[type], this._selected)) this._selected = null;
+      this._hovered = null;
       tabAlthingi.classList.toggle('active', type === 'althingi');
       tabBorgarstjorn.classList.toggle('active', type === 'borgarstjorn');
       this._render();
