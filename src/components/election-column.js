@@ -1,4 +1,5 @@
 import './party-card.js';
+import { CARD_SIZE, ROW_GAP, ROW_PITCH } from '../services/layout.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -16,9 +17,9 @@ template.innerHTML = `
       font-size: 16px;
     }
     .parties {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
+      display: grid;
+      grid-template-columns: ${CARD_SIZE}px;
+      gap: ${ROW_GAP}px;
     }
   </style>
   <div class="year-label" part="year-label"></div>
@@ -37,6 +38,8 @@ class ElectionColumn extends HTMLElement {
     this._yearLabel = this.shadowRoot.querySelector('.year-label');
     this._partiesContainer = this.shadowRoot.querySelector('.parties');
     this._parties = [];
+    this._rows = {};
+    this._rowCount = 0;
   }
 
   connectedCallback() {
@@ -62,6 +65,22 @@ class ElectionColumn extends HTMLElement {
     this._renderParties();
   }
 
+  /**
+   * Where the cards go: `rows` maps a party id to its row, and `rowCount` is the height of
+   * the whole graph, so that every column is equally tall (see services/layout.js).
+   */
+  setLayout(rows, rowCount) {
+    this._rows = rows || {};
+    this._rowCount = rowCount || 0;
+    this._renderParties();
+  }
+
+  /** Vertical centre of a row, relative to the top of this column element. */
+  rowCenterY(row) {
+    const top = this._partiesContainer.getBoundingClientRect().top - this.getBoundingClientRect().top;
+    return top + row * ROW_PITCH + CARD_SIZE / 2;
+  }
+
   get parties() {
     return this._parties;
   }
@@ -72,6 +91,8 @@ class ElectionColumn extends HTMLElement {
 
   _renderParties() {
     this._partiesContainer.innerHTML = '';
+    this._partiesContainer.style.gridTemplateRows = this._rowCount
+      ? `repeat(${this._rowCount}, ${CARD_SIZE}px)` : '';
     const year = this.getAttribute('year');
 
     this._parties.forEach(party => {
@@ -85,6 +106,7 @@ class ElectionColumn extends HTMLElement {
         if (party.elected === false) card.setAttribute('elected', 'false');
         if (party.government) card.setAttribute('government', '');
         card.id = `party-${this.electionKey}-${party.id}`;
+        if (this._rows[party.id] != null) card.style.gridRow = String(this._rows[party.id] + 1);
       }
       this._partiesContainer.appendChild(card);
     });

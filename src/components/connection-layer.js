@@ -73,8 +73,9 @@ class ConnectionLayer extends HTMLElement {
    * @param {Object} graph - The graph model from buildGraph(): elections, edges and nodes
    * @param {HTMLElement[]} columnElements - Array of <election-column> elements
    * @param {HTMLElement} container - The container element for coordinate calculation
+   * @param {Object} [layout] - The layout from layoutGraph(); gives the path of lines that skip columns
    */
-  draw(graph, columnElements, container) {
+  draw(graph, columnElements, container, layout) {
     this._svg.innerHTML = '';
     if (!graph || !columnElements || !container) return;
 
@@ -89,14 +90,19 @@ class ConnectionLayer extends HTMLElement {
 
     const partyBoxes = this._collectPartyBoxes(graph.elections, columnElements);
 
-    graph.edges.forEach(edge => {
+    graph.edges.forEach((edge, i) => {
       const fromBox = partyBoxes[`${edge.fromKey}-${edge.fromId}`];
       const toBox = partyBoxes[`${edge.toKey}-${edge.toId}`];
       if (!fromBox || !toBox) return;
-      const from = this._getBoxCenter(fromBox, containerRect);
-      const to = this._getBoxCenter(toBox, containerRect);
-      this._drawLine(from, to, edge.kind === 'defection');
-      if (edge.description) this._drawHitLine(from, to, edge.description);
+      // a line that skips columns bends through the rows reserved for it (see services/layout.js)
+      const via = (layout?.edgePaths[i] ?? []).map(({ col, row }) => {
+        const column = columnElements[col];
+        const rect = column.getBoundingClientRect();
+        return { x: rect.left - containerRect.left + rect.width / 2, y: rect.top - containerRect.top + column.rowCenterY(row) };
+      });
+      const path = [this._getBoxCenter(fromBox, containerRect), ...via, this._getBoxCenter(toBox, containerRect)];
+      this._drawPath(path, edge.kind === 'defection');
+      if (edge.description) this._drawHitPath(path, edge.description);
     });
 
     this._drawNodes(graph, columnElements, partyBoxes, containerRect);
@@ -126,32 +132,33 @@ class ConnectionLayer extends HTMLElement {
   }
 
   /** The one place a line is built: solid for a succession, dashed for a defection. */
-  _drawLine(from, to, dashed) {
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', from.x);
-    line.setAttribute('y1', from.y);
-    line.setAttribute('x2', to.x);
-    line.setAttribute('y2', to.y);
+  _drawPath(points, dashed) {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    line.setAttribute('points', points.map(p => `${p.x},${p.y}`).join(' '));
+    line.setAttribute('fill', 'none');
     line.setAttribute('stroke', '#333');
     line.setAttribute('stroke-width', '2');
+    line.setAttribute('stroke-linejoin', 'round');
     if (dashed) line.setAttribute('stroke-dasharray', '6,4');
     this._svg.appendChild(line);
   }
 
+  _drawLine(from, to, dashed) {
+    this._drawPath([from, to], dashed);
+  }
+
   /** A wide transparent line on top of a real one, to show `description` on hover. */
-  _drawHitLine(from, to, description) {
-    const hitLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    hitLine.setAttribute('x1', from.x);
-    hitLine.setAttribute('y1', from.y);
-    hitLine.setAttribute('x2', to.x);
-    hitLine.setAttribute('y2', to.y);
-    hitLine.setAttribute('stroke', 'transparent');
-    hitLine.setAttribute('stroke-width', '16');
-    hitLine.setAttribute('pointer-events', 'stroke');
-    hitLine.classList.add('hit-line');
-    hitLine.addEventListener('mousemove', evt => this._showPopover(description, evt));
-    hitLine.addEventListener('mouseleave', () => this._hidePopover());
-    this._svg.appendChild(hitLine);
+  _drawHitPath(points, description) {
+    const hit = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    hit.setAttribute('points', points.map(p => `${p.x},${p.y}`).join(' '));
+    hit.setAttribute('fill', 'none');
+    hit.setAttribute('stroke', 'transparent');
+    hit.setAttribute('stroke-width', '16');
+    hit.setAttribute('pointer-events', 'stroke');
+    hit.classList.add('hit-line');
+    hit.addEventListener('mousemove', evt => this._showPopover(description, evt));
+    hit.addEventListener('mouseleave', () => this._hidePopover());
+    this._svg.appendChild(hit);
   }
 
   _drawNodes(graph, columnElements, partyBoxes, containerRect) {
