@@ -180,6 +180,27 @@ class ElectionGraph extends HTMLElement {
     this._setupPanel();
     window.addEventListener('hashchange', () => this._onHashChange());
     this._showPanel(false);
+    this._placeView();
+  }
+
+  /**
+   * Where to scroll once a view is drawn: to the kept party if there is one (its latest card),
+   * else, on a narrow screen, to the latest election, since the graph is far wider than the screen.
+   */
+  _placeView() {
+    const columns = Array.from(this._columnsEl.querySelectorAll('election-column'));
+    const narrow = window.matchMedia('(max-width: 700px)').matches;
+    if (this._selected) {
+      for (let i = columns.length - 1; i >= 0; i--) {
+        const card = columns[i].getPartyCardById(this._selected);
+        if (card) { // 'start' on a phone: the panel covers its lower part
+          card.scrollIntoView({ behavior: 'instant', block: narrow ? 'start' : 'center', inline: 'center' });
+          return; }
+      }
+    }
+    if (narrow) {
+      window.scrollTo({ left: document.documentElement.scrollWidth, top: window.scrollY, behavior: 'instant' });
+    }
   }
 
   _setupPanel() {
@@ -220,9 +241,11 @@ class ElectionGraph extends HTMLElement {
   _onHashChange() {
     const before = [this._currentType, this._selected];
     this._applyHash();
-    if (before[0] !== this._currentType) { this._syncTabs(); this._render(); }
+    const tabChanged = before[0] !== this._currentType;
+    if (tabChanged) { this._syncTabs(); this._render(); }
     else this._applySelection();
     this._showPanel(false);
+    if (tabChanged) this._placeView();
   }
 
   /**
@@ -390,6 +413,7 @@ class ElectionGraph extends HTMLElement {
     this._syncTabs();
     this._render();
     this._showPanel(false);
+    this._placeView();
     this._writeHash();
   }
 

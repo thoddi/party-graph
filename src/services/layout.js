@@ -47,9 +47,16 @@
  *   }
  */
 
+// The size of a card and the gap between rows are CSS variables (--card-size, --row-gap in
+// index.html) so that a phone can have smaller cards. These are the desktop values, used when
+// the page has not measured anything. Row numbers do not depend on them.
 export const CARD_SIZE = 120;
 export const ROW_GAP = 18;
-export const ROW_PITCH = CARD_SIZE + ROW_GAP;
+
+/** Distance from the top of the card grid to the middle of a row, for a measured card size and gap. */
+export function rowCenter(row, size = CARD_SIZE, gap = ROW_GAP) {
+  return row * (size + gap) + size / 2;
+}
 
 export const COST = {
   line: { continuation: 1, succession: 1, defection: 0.6 },    // weight of each kind of line
