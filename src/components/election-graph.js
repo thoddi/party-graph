@@ -3,7 +3,7 @@ import { normalizeElections } from '../services/election-data.js';
 import { buildGraph, selectionFor, cardKey } from '../services/graph-model.js';
 import { partyHistory } from '../services/party-history.js';
 import { layoutGraph } from '../services/layout.js';
-import { DATASETS } from '../services/datasets.js';
+import { DATASETS, describeElections } from '../services/datasets.js';
 import './election-column.js';
 import './connection-layer.js';
 import './party-group.js';
@@ -14,33 +14,64 @@ template.innerHTML = `
   <style>
     :host {
       display: block;
-      font-family: sans-serif;
     }
     .header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 12px;
+      margin-bottom: 20px;
     }
     h1 {
+      margin: 0 0 4px;
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .lede {
       margin: 0;
-      font-size: 24px;
+      max-width: 60ch;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.4;
     }
-    .tabs {
-      margin-bottom: 18px;
+    .switcher {
+      display: inline-flex;
+      gap: 4px;
+      margin: 0 0 24px;
+      padding: 4px;
+      max-width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
     }
-    .tab-btn {
-      font-size: 16px;
-      padding: 4px 16px;
-      border-radius: 8px 8px 0 0;
-      border: 1px solid #ccc;
-      border-bottom: none;
+    .seg {
+      appearance: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      padding: 8px 18px;
+      font: inherit;
+      color: var(--muted);
+      text-align: left;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
       cursor: pointer;
-      background: #eee;
-      font-weight: bold;
+      transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
     }
-    .tab-btn.active {
-      background: #ffe066;
+    .seg:hover { color: var(--fg); }
+    .seg[aria-selected="true"] {
+      color: var(--fg);
+      background: var(--surface-3);
+      border-color: var(--border);
+      box-shadow: 0 1px 3px var(--shadow);
+    }
+    .seg:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .seg-title { font-size: 16px; font-weight: 600; }
+    .seg-sub { font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    @media (max-width: 700px) {
+      h1 { font-size: 23px; }
+      .switcher { display: flex; }
+      .seg { flex: 1 1 0; padding: 8px 10px; }
+      .seg-sub { font-size: 11px; }
     }
     .main-content {
       position: relative;
@@ -64,16 +95,21 @@ template.innerHTML = `
     }
   </style>
 
-  <div class="header">
-    <h1>Election Parties Visualization</h1>
+  <header class="header">
+    <h1>Stjórnmálaflokkar á Íslandi</h1>
+    <p class="lede">Fylgi flokka í kosningum og hvernig þeir hafa klofnað, sameinast og tekið við hver af öðrum.</p>
+  </header>
+
+  <div class="switcher" role="tablist" aria-label="Tegund kosninga">
+    <button class="seg" type="button" role="tab" id="tab-althingi" aria-controls="main-content">
+      <span class="seg-title">Alþingi</span><span class="seg-sub"></span>
+    </button>
+    <button class="seg" type="button" role="tab" id="tab-borgarstjorn" aria-controls="main-content">
+      <span class="seg-title">Borgarstjórn</span><span class="seg-sub"></span>
+    </button>
   </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" id="tab-althingi">Alþingiskosningar</button>
-    <button class="tab-btn" id="tab-borgarstjorn">Borgarstjórnarkosningar</button>
-  </div>
-
-  <div class="main-content" id="main-content">
+  <div class="main-content" id="main-content" role="tabpanel">
     <connection-layer id="connections"></connection-layer>
     <div class="columns" id="columns"></div>
   </div>
@@ -326,14 +362,39 @@ class ElectionGraph extends HTMLElement {
   }
 
   _syncTabs() {
-    this.shadowRoot.getElementById('tab-althingi').classList.toggle('active', this._currentType === 'althingi');
-    this.shadowRoot.getElementById('tab-borgarstjorn').classList.toggle('active', this._currentType === 'borgarstjorn');
+    for (const type of Object.keys(DATASETS)) {
+      const tab = this.shadowRoot.getElementById(`tab-${type}`);
+      const on = this._currentType === type;
+      tab.setAttribute('aria-selected', String(on));
+      tab.tabIndex = on ? 0 : -1;   // one tab stop; the arrow keys move between the tabs
+    }
+    this._mainContent.setAttribute('aria-labelledby', `tab-${this._currentType}`);
+  }
+
+  /** "1923–2021 · 33 kosningar" under each tab name, from the data. */
+  _fillTabMeta() {
+    for (const type of Object.keys(DATASETS)) {
+      const sub = this.shadowRoot.querySelector(`#tab-${type} .seg-sub`);
+      sub.textContent = describeElections(this._electionData[type]?.elections ?? []);
+    }
   }
 
   _setupTabs() {
+    this._fillTabMeta();
     this._syncTabs();
-    this.shadowRoot.getElementById('tab-althingi').addEventListener('click', () => this._setTab('althingi'));
-    this.shadowRoot.getElementById('tab-borgarstjorn').addEventListener('click', () => this._setTab('borgarstjorn'));
+    const types = Object.keys(DATASETS);
+    for (const type of types) {
+      this.shadowRoot.getElementById(`tab-${type}`).addEventListener('click', () => this._setTab(type));
+    }
+    this.shadowRoot.querySelector('.switcher').addEventListener('keydown', evt => {
+      const i = types.indexOf(this._currentType);
+      const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: types.length - 1 }[evt.key];
+      if (next == null) return;
+      evt.preventDefault();
+      const type = types[(next + types.length) % types.length];
+      this._setTab(type);
+      this.shadowRoot.getElementById(`tab-${type}`).focus();
+    });
   }
 }
 

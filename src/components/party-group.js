@@ -9,8 +9,8 @@ template.innerHTML = `
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: #d22;
-      border: 2px solid #333;
+      background: var(--node);
+      border: 2px solid var(--line);
     }
     .group-label {
       position: absolute;
