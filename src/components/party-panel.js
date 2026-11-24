@@ -2,10 +2,10 @@ const template = document.createElement('template');
 template.innerHTML = `
   <style>
     :host {
-      --panel-bg: #fff;
-      --panel-fg: #222;
-      --panel-muted: #666;
-      --panel-border: #ccc;
+      --panel-bg: var(--surface);
+      --panel-fg: var(--fg);
+      --panel-muted: var(--muted);
+      --panel-border: var(--border);
       position: fixed;
       z-index: 20;
       right: 0;
@@ -16,9 +16,9 @@ template.innerHTML = `
       background: var(--panel-bg);
       color: var(--panel-fg);
       border-left: 1px solid var(--panel-border);
-      box-shadow: -2px 0 10px #0002;
+      box-shadow: -2px 0 10px var(--shadow);
       overflow-y: auto;
-      font-family: sans-serif;
+      font-family: inherit;
       font-size: 14px;
     }
     :host([open]) { display: block; }
@@ -31,14 +31,14 @@ template.innerHTML = `
       font-size: 20px; line-height: 1; padding: 6px 10px; cursor: pointer;
       border: 1px solid var(--panel-border); border-radius: 6px; background: transparent; color: inherit;
     }
-    .close:focus-visible, .link:focus-visible { outline: 3px solid #05c; outline-offset: 2px; }
+    .close:focus-visible, .link:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     .meta { color: var(--panel-muted); margin: 4px 0 0; }
     .logos { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 12px; }
     .logo { margin: 0; text-align: center; font-size: 11px; color: var(--panel-muted); flex: 0 0 auto; }
-    .logo img { display: block; max-width: 44px; max-height: 44px; margin: 0 auto 2px; }
+    .logo img { display: block; max-width: 44px; max-height: 44px; margin: 0 auto 2px; background: var(--logo-bg); border-radius: 4px; }
     ul { margin: 0; padding: 0; list-style: none; }
     li { margin: 4px 0; }
-    .link { background: none; border: none; padding: 0; font: inherit; color: #05c; text-decoration: underline; cursor: pointer; }
+    .link { background: none; border: none; padding: 0; font: inherit; color: var(--accent); text-decoration: underline; cursor: pointer; }
     .kind { color: var(--panel-muted); }
     table { border-collapse: collapse; width: 100%; margin-top: 6px; }
     th, td { text-align: left; padding: 3px 6px 3px 0; border-bottom: 1px solid var(--panel-border); vertical-align: top; }
@@ -46,7 +46,7 @@ template.innerHTML = `
     svg.spark { display: block; width: 100%; height: 56px; }
     .empty { color: var(--panel-muted); }
     @media (max-width: 700px) {
-      :host { top: auto; left: 0; width: auto; height: 60vh; border-left: none; border-top: 1px solid var(--panel-border); box-shadow: 0 -2px 10px #0002; }
+      :host { top: auto; left: 0; width: auto; height: 60vh; border-left: none; border-top: 1px solid var(--panel-border); box-shadow: 0 -2px 10px var(--shadow); }
     }
   </style>
   <div class="inner" role="dialog" aria-labelledby="title">

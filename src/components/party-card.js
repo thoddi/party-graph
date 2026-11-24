@@ -10,35 +10,36 @@ template.innerHTML = `
       align-items: center;
       width: 120px;
       height: 120px;
-      border: 2px solid #ccc;
+      border: 2px solid var(--border);
       border-radius: 18px;
       padding: 8px;
       text-align: center;
-      background: #fff;
+      background: var(--surface);
+      color: var(--fg);
       box-sizing: border-box;
       transition: border-color 0.2s, opacity 0.15s;
       cursor: pointer;
     }
     :host(:focus-visible) {
-      outline: 3px solid #05c;
+      outline: 3px solid var(--accent);
       outline-offset: 3px;
     }
     :host([highlighted]) {
-      outline: 3px solid #333;
+      outline: 3px solid var(--fg);
       outline-offset: 2px;
     }
     :host([related]) {
-      outline: 2px dashed #333;
+      outline: 2px dashed var(--fg);
       outline-offset: 2px;
     }
     :host([dimmed]) {
       opacity: 0.3;
     }
     :host(.elected-false) {
-      border-color: #e22;
+      border-color: var(--not-elected);
     }
     :host(.government) {
-      box-shadow: 0 0 8px 3px #ffe066cc, 0 0 16px 6px #ffe06688;
+      box-shadow: 0 0 8px 3px color-mix(in srgb, var(--gov) 80%, transparent), 0 0 16px 6px color-mix(in srgb, var(--gov) 53%, transparent);
     }
     :host(.empty) {
       border: none;
@@ -52,6 +53,8 @@ template.innerHTML = `
       max-height: 80px;
       display: block;
       margin: 0 auto 4px;
+      background: var(--logo-bg);
+      border-radius: 6px;
     }
     .name {
       font-size: 12px;
@@ -59,7 +62,7 @@ template.innerHTML = `
     }
     .votes {
       font-size: 11px;
-      color: #666;
+      color: var(--muted);
     }
   </style>
   <img part="logo" hidden>

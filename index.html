@@ -3,13 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Election Parties Visualization</title>
+  <title>Stjórnmálaflokkar á Íslandi</title>
+  <meta name="description" content="Íslenskir stjórnmálaflokkar í Alþingis- og borgarstjórnarkosningum: fylgi, ríkisstjórnir og hvernig flokkar hafa klofnað, sameinast og tekið við hver af öðrum.">
+  <meta name="color-scheme" content="light dark">
   <style>
+    /*
+     * Theme tokens. Custom properties inherit into every component's shadow DOM, so the
+     * components only use var(--…) and never a colour of their own.
+     */
+    :root {
+      --bg: #f6f6f3;
+      --fg: #1f2328;
+      --muted: #5b626b;
+      --border: #d3d6db;
+      --surface: #ffffff;        /* cards, panel, active segment */
+      --surface-2: #e8eaed;      /* track behind the segmented control */
+      --surface-3: #ffffff;      /* the selected segment, raised above its track */
+      --accent: #0055cc;         /* focus rings and links */
+      --line: #3b4048;           /* connection lines */
+      --node: #d22222;           /* split/merge circles */
+      --not-elected: #e22222;
+      --gov: #ffd23f;            /* government glow */
+      --popover-bg: #fffbe6;
+      --shadow: rgba(0, 0, 0, 0.14);
+      --logo-bg: transparent;    /* what sits behind a logo */
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121417;
+        --fg: #e8eaed;
+        --muted: #a2a9b2;
+        --border: #3b4148;
+        --surface: #1d2126;
+        --surface-2: #272c32;
+        --surface-3: #3b424b;
+        --accent: #6ea8ff;
+        --line: #a9b0b9;
+        --node: #e5484d;
+        --not-elected: #ff6b6b;
+        --gov: #f2c230;
+        --popover-bg: #3a3520;
+        --shadow: rgba(0, 0, 0, 0.55);
+        --logo-bg: #ffffff;      /* many logos are dark marks on transparent */
+        color-scheme: dark;
+      }
+    }
+
     * { box-sizing: border-box; }
     body {
-      font-family: sans-serif;
+      font-family: var(--font);
       margin: 0;
       padding: 16px;
+      background: var(--bg);
+      color: var(--fg);
     }
   </style>
 </head>

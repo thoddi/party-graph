@@ -18,18 +18,18 @@ template.innerHTML = `
     }
     .line {
       fill: none;
-      stroke: var(--line-color, #333);
+      stroke: var(--line);
       stroke-width: 2;
       stroke-linejoin: round;
       transition: opacity 0.15s;
     }
     .node {
-      fill: #d22;
-      stroke: var(--line-color, #333);
+      fill: var(--node);
+      stroke: var(--line);
       stroke-width: 2;
       transition: opacity 0.15s;
     }
-    .node-label { transition: opacity 0.15s; }
+    .node-label { fill: var(--fg); transition: opacity 0.15s; }
     .dim { opacity: 0.12; }
     .hl.line { stroke-width: 3.5; }
   </style>
@@ -65,11 +65,11 @@ class ConnectionLayer extends HTMLElement {
     Object.assign(this._popover.style, {
       position: 'fixed',
       pointerEvents: 'none',
-      background: '#fffbe6',
-      color: '#333',
-      border: '1px solid #ffe066',
+      background: 'var(--popover-bg)',
+      color: 'var(--fg)',
+      border: '1px solid var(--gov)',
       borderRadius: '6px',
-      boxShadow: '0 2px 8px #0002',
+      boxShadow: '0 2px 8px var(--shadow)',
       padding: '8px 12px',
       fontSize: '15px',
       zIndex: '10000',
