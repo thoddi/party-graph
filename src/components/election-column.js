@@ -1,5 +1,6 @@
 import './party-card.js';
 import { CARD_SIZE, ROW_GAP, ROW_PITCH } from '../services/layout.js';
+import { governmentMembership } from '../services/election-data.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -28,7 +29,7 @@ template.innerHTML = `
 
 class ElectionColumn extends HTMLElement {
   static get observedAttributes() {
-    return ['year', 'label'];
+    return ['year', 'label', 'kind'];
   }
 
   constructor() {
@@ -38,6 +39,7 @@ class ElectionColumn extends HTMLElement {
     this._yearLabel = this.shadowRoot.querySelector('.year-label');
     this._partiesContainer = this.shadowRoot.querySelector('.parties');
     this._parties = [];
+    this._election = null;   // the normalised election: needed for its governments
     this._rows = {};
     this._rowCount = 0;
   }
@@ -48,6 +50,7 @@ class ElectionColumn extends HTMLElement {
 
   attributeChangedCallback(name) {
     if (name === 'year' || name === 'label') this._renderYear();
+    else if (name === 'kind') this._renderParties();
   }
 
   /** Numeric year of the election (used for logos and names). */
@@ -58,6 +61,11 @@ class ElectionColumn extends HTMLElement {
   /** Unique id of the column; differs from the year when there are two elections in one year. */
   get electionKey() {
     return this.getAttribute('election-key') || this.getAttribute('year');
+  }
+
+  /** The normalised election this column shows; set before `parties`. */
+  set election(election) {
+    this._election = election;
   }
 
   set parties(partyList) {
@@ -104,7 +112,9 @@ class ElectionColumn extends HTMLElement {
         card.setAttribute('year', year);
         if (party.votes != null) card.setAttribute('votes', party.votes);
         if (party.elected === false) card.setAttribute('elected', 'false');
-        if (party.government) card.setAttribute('government', '');
+        const mask = this._election ? governmentMembership(this._election, party.id) : (party.government ? [true] : []);
+        if (mask.length) card.setAttribute('governments', mask.map(on => on ? '1' : '0').join(''));
+        if (this.hasAttribute('kind')) card.setAttribute('kind', this.getAttribute('kind'));
         card.id = `party-${this.electionKey}-${party.id}`;
         if (this._rows[party.id] != null) card.style.gridRow = String(this._rows[party.id] + 1);
       }

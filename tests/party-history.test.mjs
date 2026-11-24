@@ -30,7 +30,7 @@ test('origins and successors, by date', () => {
 test('results per tab, with joint lists and flags', () => {
   const h = partyHistory('a', parties, datasets);
   assert.equal(h.results.althingi.length, 2);
-  assert.deepEqual(h.results.althingi[0], { key: '1940', label: '1940', year: 1940, votes: 30, elected: true, government: true, via: null });
+  assert.deepEqual(h.results.althingi[0], { key: '1940', label: '1940', year: 1940, votes: 30, elected: true, government: true, governments: { total: 1, in: 1, names: [] }, via: null });
   assert.equal(h.results.althingi[1].via, 'Joint');
   assert.deepEqual(h.results.borgarstjorn, []);
   assert.equal(partyHistory('b', parties, datasets).results.althingi[0].elected, false);

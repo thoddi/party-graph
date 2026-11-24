@@ -1,4 +1,5 @@
 import PartyData from '../services/party-data.js';
+import { governmentPhrase } from '../services/datasets.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -10,7 +11,7 @@ template.innerHTML = `
       align-items: center;
       width: 120px;
       height: 120px;
-      border: 2px solid var(--border);
+      border: 2px solid var(--border-strong);
       border-radius: 18px;
       padding: 8px;
       text-align: center;
@@ -19,6 +20,7 @@ template.innerHTML = `
       box-sizing: border-box;
       transition: border-color 0.2s, opacity 0.15s;
       cursor: pointer;
+      position: relative;
     }
     :host(:focus-visible) {
       outline: 3px solid var(--accent);
@@ -36,11 +38,29 @@ template.innerHTML = `
       opacity: 0.3;
     }
     :host(.elected-false) {
+      border-style: dashed;   /* not only red: the dashes tell it apart without colour */
       border-color: var(--not-elected);
     }
-    :host(.government) {
-      box-shadow: 0 0 8px 3px color-mix(in srgb, var(--gov) 80%, transparent), 0 0 16px 6px color-mix(in srgb, var(--gov) 53%, transparent);
+    /* One segment per government of the term: filled when the party sat in it, an outline when not. */
+    .gov {
+      position: absolute;
+      left: 50%;
+      bottom: -11px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 3px;
+      padding: 2px 4px;
+      background: var(--bg);
+      border-radius: 6px;
     }
+    .gov[hidden] { display: none; }
+    .gov i {
+      width: 16px;
+      height: 6px;
+      border: 1.5px solid var(--gov-bar);
+      border-radius: 3px;
+    }
+    .gov i.in { background: var(--gov-bar); }
     :host(.empty) {
       border: none;
       background: none;
@@ -49,8 +69,8 @@ template.innerHTML = `
       cursor: default;
     }
     img {
-      max-width: 80px;
-      max-height: 80px;
+      max-width: 60px;
+      max-height: 60px;
       display: block;
       margin: 0 auto 4px;
       background: var(--logo-bg);
@@ -68,11 +88,12 @@ template.innerHTML = `
   <img part="logo" hidden>
   <div class="name" part="name"></div>
   <div class="votes" part="votes"></div>
+  <div class="gov" part="government" hidden></div>
 `;
 
 class PartyCard extends HTMLElement {
   static get observedAttributes() {
-    return ['party-id', 'year', 'votes', 'elected', 'government', 'empty', 'highlighted'];
+    return ['party-id', 'year', 'votes', 'elected', 'governments', 'kind', 'empty', 'highlighted'];
   }
 
   constructor() {
@@ -82,6 +103,7 @@ class PartyCard extends HTMLElement {
     this._img = this.shadowRoot.querySelector('img');
     this._nameEl = this.shadowRoot.querySelector('.name');
     this._votesEl = this.shadowRoot.querySelector('.votes');
+    this._govEl = this.shadowRoot.querySelector('.gov');
   }
 
   connectedCallback() {
@@ -99,6 +121,7 @@ class PartyCard extends HTMLElement {
       this._img.hidden = true;
       this._nameEl.textContent = '';
       this._votesEl.textContent = '';
+      this._govEl.hidden = true;
       this.removeAttribute('tabindex');
       this.removeAttribute('role');
       this.removeAttribute('aria-label');
@@ -112,10 +135,17 @@ class PartyCard extends HTMLElement {
     const displayName = PartyData.getDisplayName(partyId, year);
     const votes = this.getAttribute('votes');
     const elected = this.getAttribute('elected') !== 'false';
-    const government = this.hasAttribute('government');
+    // `governments` is one digit per government of the term: "101" = in the 1st and 3rd
+    const mask = [...(this.getAttribute('governments') ?? '')].map(c => c === '1');
+    const inCount = mask.filter(Boolean).length;
 
     this.classList.toggle('elected-false', !elected);
-    this.classList.toggle('government', government);
+    this._govEl.replaceChildren(...mask.map(on => {
+      const seg = document.createElement('i');
+      seg.classList.toggle('in', on);
+      return seg;
+    }));
+    this._govEl.hidden = !inCount;
 
     const logo = PartyData.getLogo(partyId, year);
     if (logo) {
@@ -136,7 +166,7 @@ class PartyCard extends HTMLElement {
     this.setAttribute('aria-label', [
       name, year, votes ? `${votes}%` : '',
       elected ? '' : 'ekki kjörinn',
-      government ? 'í ríkisstjórn' : '',
+      governmentPhrase(this.getAttribute('kind'), inCount, mask.length),
     ].filter(Boolean).join(', '));
   }
 }
