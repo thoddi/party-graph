@@ -1,11 +1,13 @@
 import PartyData from '../services/party-data.js';
 import { normalizeElections } from '../services/election-data.js';
 import { buildGraph, selectionFor, cardKey } from '../services/graph-model.js';
+import { partyHistory } from '../services/party-history.js';
 import { layoutGraph } from '../services/layout.js';
 import { DATASETS } from '../services/datasets.js';
 import './election-column.js';
 import './connection-layer.js';
 import './party-group.js';
+import './party-panel.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -44,6 +46,10 @@ template.innerHTML = `
       position: relative;
       min-height: 600px;
     }
+    .main-content.panel-open { padding-right: 376px; }
+    @media (max-width: 700px) {
+      .main-content.panel-open { padding-right: 0; padding-bottom: 62vh; }
+    }
     .columns {
       display: flex;
       align-items: flex-start;
@@ -71,6 +77,7 @@ template.innerHTML = `
     <connection-layer id="connections"></connection-layer>
     <div class="columns" id="columns"></div>
   </div>
+  <party-panel id="panel"></party-panel>
 `;
 
 class ElectionGraph extends HTMLElement {
@@ -82,6 +89,7 @@ class ElectionGraph extends HTMLElement {
     this._columnsEl = this.shadowRoot.getElementById('columns');
     this._connectionLayer = this.shadowRoot.getElementById('connections');
     this._mainContent = this.shadowRoot.getElementById('main-content');
+    this._panel = this.shadowRoot.getElementById('panel');
 
     this._currentType = 'althingi';
     this._electionData = { althingi: null, borgarstjorn: null };
@@ -97,11 +105,58 @@ class ElectionGraph extends HTMLElement {
     await this._loadElectionData('althingi');
     await this._loadElectionData('borgarstjorn');
 
+    this._applyHash();
     this._render();
     this._setupTabs();
 
     window.addEventListener('resize', () => this._drawConnections());
     this._setupSelection();
+    this._setupPanel();
+    window.addEventListener('hashchange', () => this._onHashChange());
+    this._showPanel(false);
+  }
+
+  _setupPanel() {
+    this._panel.addEventListener('panel-close', () => this._select(null, { restoreFocus: true }));
+    this._panel.addEventListener('party-select', evt => this._goTo(evt.detail));
+  }
+
+  /** Open a party from the panel: on the current tab if it is there, else on the other one. */
+  _goTo(partyId) {
+    if (!selectionFor(this._graph, partyId)) {
+      const other = Object.keys(this._graphs).find(t => t !== this._currentType && selectionFor(this._graphs[t], partyId));
+      if (other) this._setTab(other);
+    }
+    this._select(partyId);
+  }
+
+  _showPanel(keyboard) {
+    const open = !!this._selected;
+    this._mainContent.classList.toggle('panel-open', open);
+    if (!open) { this._panel.hide(); return; }
+    const history = partyHistory(this._selected, PartyData.partiesById, this._electionData);
+    if (history) this._panel.show(history, { focus: keyboard });
+    else this._panel.hide();
+  }
+
+  // The address keeps the view: #althingi, or #borgarstjorn/framsokn for a party on a tab.
+  _applyHash() {
+    const [tab, party] = decodeURIComponent(location.hash.slice(1)).split('/');
+    if (this._graphs[tab]) this._currentType = tab;
+    this._selected = party && PartyData.partiesById[party] ? party : null;
+  }
+
+  _writeHash() {
+    const hash = '#' + this._currentType + (this._selected ? '/' + this._selected : '');
+    if (location.hash !== hash) history.replaceState(null, '', hash);
+  }
+
+  _onHashChange() {
+    const before = [this._currentType, this._selected];
+    this._applyHash();
+    if (before[0] !== this._currentType) { this._syncTabs(); this._render(); }
+    else this._applySelection();
+    this._showPanel(false);
   }
 
   /**
@@ -123,6 +178,7 @@ class ElectionGraph extends HTMLElement {
     cols.addEventListener('focusout', () => this._setHovered(null));
     cols.addEventListener('click', evt => {
       const id = partyOf(evt);
+      this._lastCard = evt.composedPath().find(el => el.localName === 'party-card');
       if (id) this._select(id === this._selected ? null : id);
     });
     cols.addEventListener('keydown', evt => {
@@ -130,14 +186,15 @@ class ElectionGraph extends HTMLElement {
       const id = partyOf(evt);
       if (!id) return;
       evt.preventDefault();
-      this._select(id === this._selected ? null : id);
+      this._lastCard = evt.composedPath().find(el => el.localName === 'party-card');
+      this._select(id === this._selected ? null : id, { keyboard: true });
     });
     // a click that is not on a card or a line clears the selection
     this._mainContent.addEventListener('click', evt => {
       if (!partyOf(evt)) this._select(null);
     });
     document.addEventListener('keydown', evt => {
-      if (evt.key === 'Escape' && (this._selected || this._hovered)) { this._hovered = null; this._select(null); }
+      if (evt.key === 'Escape' && (this._selected || this._hovered)) { this._hovered = null; this._select(null, { restoreFocus: !!this._selected }); }
     });
   }
 
@@ -147,10 +204,16 @@ class ElectionGraph extends HTMLElement {
     this._applySelection();
   }
 
-  _select(partyId) {
+  _select(partyId, { restoreFocus = false, keyboard = false } = {}) {
+    const hadFocusInPanel = this._panel.hide();
     this._selected = partyId;
     this._applySelection();
+    this._showPanel(keyboard || (partyId != null && hadFocusInPanel));   // keep focus in the panel
+    this._writeHash();
+    if (partyId == null && (restoreFocus || hadFocusInPanel)) this._focusCard(this._lastCard);
   }
+
+  _focusCard(card) { card?.isConnected && card.focus(); }
 
   /** Mark the cards and lines of the hovered party, or else the kept one; dim everything else. */
   _applySelection() {
@@ -251,22 +314,26 @@ class ElectionGraph extends HTMLElement {
     this._applySelection();
   }
 
+  _setTab(type) {
+    this._currentType = type;
+    // keep the selected party only if it is on this tab too
+    if (this._selected && !selectionFor(this._graphs[type], this._selected)) this._selected = null;
+    this._hovered = null;
+    this._syncTabs();
+    this._render();
+    this._showPanel(false);
+    this._writeHash();
+  }
+
+  _syncTabs() {
+    this.shadowRoot.getElementById('tab-althingi').classList.toggle('active', this._currentType === 'althingi');
+    this.shadowRoot.getElementById('tab-borgarstjorn').classList.toggle('active', this._currentType === 'borgarstjorn');
+  }
+
   _setupTabs() {
-    const tabAlthingi = this.shadowRoot.getElementById('tab-althingi');
-    const tabBorgarstjorn = this.shadowRoot.getElementById('tab-borgarstjorn');
-
-    const setTab = (type) => {
-      this._currentType = type;
-      // keep the selected party only if it is on this tab too
-      if (this._selected && !selectionFor(this._graphs[type], this._selected)) this._selected = null;
-      this._hovered = null;
-      tabAlthingi.classList.toggle('active', type === 'althingi');
-      tabBorgarstjorn.classList.toggle('active', type === 'borgarstjorn');
-      this._render();
-    };
-
-    tabAlthingi.addEventListener('click', () => setTab('althingi'));
-    tabBorgarstjorn.addEventListener('click', () => setTab('borgarstjorn'));
+    this._syncTabs();
+    this.shadowRoot.getElementById('tab-althingi').addEventListener('click', () => this._setTab('althingi'));
+    this.shadowRoot.getElementById('tab-borgarstjorn').addEventListener('click', () => this._setTab('borgarstjorn'));
   }
 }
 
